@@ -1,6 +1,7 @@
 package Core;
 
 import Core.Http.Code;
+import Core.Singleton.ServerSingleton;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ public class Model {
     private String method;
     private int code = Code.OK;
     private String error = "OK";
+    private String errorMsg;
     private long timestamp = System.currentTimeMillis();
     protected ArrayList<Object> data = new ArrayList<>();
 
@@ -54,7 +56,15 @@ public class Model {
         this.error = error;
     }
 
-    public void setCode(int code) {
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public void setMethod(String method) {
+        this.method = method;
+    }
+
+    public void setCode(String socket, int code) {
         if (code == Code.BAD_REQUEST ||
                 code == Code.FORBIDDEN ||
                 code == Code.INTERNAL_SERVER_ERROR ||
@@ -67,6 +77,14 @@ public class Model {
         }
         error = capitalizeAllWords(getCodeName(code));
         this.code = code;
+        ServerSingleton.getInstance().setHttpCode(socket, code);
+    }
+
+    public void setNoReturnValue(String socket) {
+        error = capitalizeAllWords(getCodeName(Code.OK));
+        code = Code.OK;
+        data = null;
+        ServerSingleton.getInstance().setHttpCode(socket, Code.OK);
     }
 
     public static String capitalizeAllWords(String str) {

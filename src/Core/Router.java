@@ -28,7 +28,7 @@ public class Router {
         Oauth2 oauth2 = new Oauth2((headerField.containsKey("Authorization")) ? headerField.get("Authorization") : null);
         Oauth2Permissions oauth2Permissions = new Oauth2Permissions();
         if ((!route.equals("/oauth")) || (oauth2.getType() != null && oauth2.getType().equals(Oauth2.BASIC) && route.equals("/oauth"))) {
-            if (oauth2Permissions.checkPermsRoute(socket, oauth2, route, obj, oauth2.getType())) {
+            if (oauth2Permissions.checkPermsRoute(socket, oauth2, method, route, obj, oauth2.getType())) {
                 for (Method methods : obj.getDeclaredMethods()) {
                     if (methods.isAnnotationPresent(Route.class) && methods.isAnnotationPresent(Methode.class)) {
                         if (parseRouteParameters(methods.getAnnotation(Route.class).value(), route) && methods.getAnnotation(Methode.class).value().equals(method)) {
@@ -47,14 +47,14 @@ public class Router {
                 }
             } else {
                 ServerSingleton.getInstance().setHttpCode(socket, Code.UNAUTHORIZED);
-                String json = gson.toJson(new Error(Code.UNAUTHORIZED));
+                String json = gson.toJson(new Error(socket, method, route, Code.UNAUTHORIZED));
                 System.out.println("[SERVER] -> " + json);
                 return json;
             }
             UserSecuritySingleton.getInstance().setUserOffline(socket);
         }
-        ServerSingleton.getInstance().setHttpCode(socket, Code.NOT_FOUND);
-        String json = gson.toJson(new Error(Code.NOT_FOUND));
+        ServerSingleton.getInstance().setHttpCode(socket, Code.METHOD_NOT_ALLOWED);
+        String json = gson.toJson(new Error(socket, method, route, Code.METHOD_NOT_ALLOWED));
         System.out.println("[SERVER] -> " + json);
         return json;
     }

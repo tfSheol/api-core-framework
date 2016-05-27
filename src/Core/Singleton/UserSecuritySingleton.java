@@ -16,9 +16,9 @@ public class UserSecuritySingleton {
     private int nbUsers = 0;
 
     private UserSecuritySingleton() {
-        addUser(1, "Sheol", "test", PermsSingleton.MEMBER);
-        addUser(2, "Admin", "admin", PermsSingleton.ADMIN);
-        addUser(3, "Modo", "modo", PermsSingleton.MODO);
+        addUser(1, "Sheol", hashString("test"), PermsSingleton.MEMBER);
+        addUser(2, "Admin", hashString("admin"), PermsSingleton.ADMIN);
+        addUser(3, "Modo", hashString("modo"), PermsSingleton.MODO);
         System.out.println("[SYSTEM] -> Nb users loaded: " + nbUsers);
     }
 
@@ -39,7 +39,7 @@ public class UserSecuritySingleton {
     public void addUser(int id, String username, String password, int group) {
         HashMap<String, Object> user = new HashMap<>();
         user.put("username", username);
-        user.put("password", hashString(password));
+        user.put("password", password);
         user.put("id", id);
         user.put("group", group);
         user.put("socket", "");
@@ -54,6 +54,15 @@ public class UserSecuritySingleton {
         for (HashMap<String, Object> user : users) {
             if (user.get("socket").equals(socket)) {
                 user.replace(key, value);
+            }
+        }
+    }
+
+    public void updateFullUser(String socket, String username, String password) {
+        for (HashMap<String, Object> user : users) {
+            if (user.get("socket").equals(socket)) {
+                user.replace("username", username);
+                user.replace("password", password);
             }
         }
     }
@@ -107,6 +116,15 @@ public class UserSecuritySingleton {
         for (HashMap<String, Object> user : users) {
             if (user.get("socket").equals(socket)) {
                 return user.get("group");
+            }
+        }
+        return -1;
+    }
+
+    public int getUserId(String socket) {
+        for (HashMap<String, Object> user : users) {
+            if (user.get("socket").equals(socket)) {
+                return (int) user.get("id");
             }
         }
         return -1;

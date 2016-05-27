@@ -1,4 +1,7 @@
 # Api Core Framework
+## Examples
+Des examples sont d'utilisation et de connexion sont présents dans le dossier `Examples`.
+
 ## Todo
 * [-] Ajout d'une singleton en lien entre user, token et perms
 * [-] Attribution des routes par annotations

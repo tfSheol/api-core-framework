@@ -8,10 +8,10 @@ import Core.Singleton.UserSecuritySingleton;
  */
 public class Oauth2Model extends Model {
     public String access_token;
-    public long expires_in;
+    public Long expires_in;
     public String token_type = Oauth2.BEARER.toLowerCase();
     public String scope = "read/write";
-    public int group;
+    public Integer group;
 
     public Oauth2Model(String socket, Oauth2 oauth2) {
         if (oauth2.login(socket)) {
@@ -19,7 +19,11 @@ public class Oauth2Model extends Model {
             group = (int) UserSecuritySingleton.getInstance().getUserGroup(socket);
             expires_in = (long) UserSecuritySingleton.getInstance().getTokenExpires(socket);
         } else {
-            setCode(Code.UNAUTHORIZED);
+            setCode(socket, Code.UNAUTHORIZED);
+            scope = null;
+            token_type = null;
+            expires_in = null;
+            group = null;
         }
         data = null;
     }
