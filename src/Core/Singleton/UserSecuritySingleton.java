@@ -2,6 +2,7 @@ package Core.Singleton;
 
 import Core.Http.Oauth2;
 
+import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -16,9 +17,10 @@ public class UserSecuritySingleton {
     private int nbUsers = 0;
 
     private UserSecuritySingleton() {
-        addUser(1, "Sheol", hashString("test"), PermsSingleton.MEMBER);
-        addUser(2, "Admin", hashString("admin"), PermsSingleton.ADMIN);
-        addUser(3, "Modo", hashString("modo"), PermsSingleton.MODO);
+        addUser(1, "Sheol", hashSHA1("Plugin.Server.Controller.test"), PermsSingleton.MEMBER);
+        addUser(2, "Admin", hashSHA1("admin"), PermsSingleton.ADMIN);
+        addUser(3, "Modo", hashSHA1("modo"), PermsSingleton.MODO);
+        System.out.println(hashSHA1("admin"));
         System.out.println("[SYSTEM] -> Nb users loaded: " + nbUsers);
     }
 
@@ -26,7 +28,7 @@ public class UserSecuritySingleton {
         return instance;
     }
 
-    public static String hashString(String str) {
+    /*public static String hashString(String str) {
         String ret = "";
         int hash = ConfigSingleton.getInstance().getSalt();
         for (int i = 0; i < str.length(); i++) {
@@ -34,6 +36,35 @@ public class UserSecuritySingleton {
             ret = ret.concat(Integer.toString(hash));
         }
         return ret;
+    }*/
+
+
+    public static String hashSHA1(String text) {
+        MessageDigest md;
+        try {
+            md = MessageDigest.getInstance("SHA-1");
+            md.update(text.concat(ConfigSingleton.getInstance().getSalt()).getBytes("UTF-8"), 0, text.length());
+            return toHex(md.digest());
+        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private static String toHex(byte[] data) {
+        StringBuffer buf = new StringBuffer();
+        for (int i = 0; i < data.length; i++) {
+            int halfbyte = (data[i] >>> 4) & 0x0F;
+            int two_halfs = 0;
+            do {
+                if ((0 <= halfbyte) && (halfbyte <= 9))
+                    buf.append((char) ('0' + halfbyte));
+                else
+                    buf.append((char) ('a' + (halfbyte - 10)));
+                halfbyte = data[i] & 0x0F;
+            } while (two_halfs++ < 1);
+        }
+        return buf.toString();
     }
 
     public void addUser(int id, String username, String password, int group) {
@@ -69,7 +100,7 @@ public class UserSecuritySingleton {
 
     public boolean checkUser(String socket, String username, String password) {
         for (HashMap<String, Object> user : users) {
-            if (user.get("username").equals(username) && user.get("password").equals(hashString(password))) {
+            if (user.get("username").equals(username) && user.get("password").equals(hashSHA1(password))) {
                 user.replace("socket", socket);
                 user.replace("online", 1);
                 user.replace("token", Oauth2.generateToken());

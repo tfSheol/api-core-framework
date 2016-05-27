@@ -1,4 +1,4 @@
-package Plugin.Server.Model;
+package Plugin.Server;
 
 import Core.Model;
 import Core.Singleton.ConfigSingleton;

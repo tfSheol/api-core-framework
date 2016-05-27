@@ -53,8 +53,8 @@ public class ConfigSingleton {
         return Long.valueOf(props.getProperty("token_expires"));
     }
 
-    public int getSalt() {
-        return Integer.parseInt(props.getProperty("salt"));
+    public String getSalt() {
+        return props.getProperty("salt");
     }
 
     public void setProps(String key, String value, String store) {

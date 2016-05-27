@@ -1,4 +1,4 @@
-package Plugin.Artefact.Model;
+package Plugin.Artefact;
 
 import Core.Database.SQLite;
 import Core.Model;
