@@ -6,6 +6,7 @@ import Core.Http.Oauth2Model;
 import Core.Methode;
 import Core.Model;
 import Core.Route;
+import Core.Singleton.ServerSingleton;
 import Core.Singleton.UserSecuritySingleton;
 import Plugin.Artefact.Codex;
 import Plugin.Server.Email;
@@ -55,7 +56,7 @@ public class Path {
     @Methode("GET")
     @Route("/test/{limit}/{id}")
     public TestModel getTest(String socket, Oauth2 oauth2, HashMap<String, String> headerField, JSONObject jsonObject, HashMap<String, Object> args) {
-        System.out.println("[DEBUG] -> " + args.get("limit") + " " + args.get("id"));
+        ServerSingleton.getInstance().log("[DEBUG] -> " + args.get("limit") + " " + args.get("id"));
         return new TestModel();
     }
 

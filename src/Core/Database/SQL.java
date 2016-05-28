@@ -1,5 +1,7 @@
 package Core.Database;
 
+import Core.Singleton.ServerSingleton;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.sql.Connection;
@@ -25,7 +27,7 @@ public class SQL {
             }
         }
         String ret = String.format(subject.replace("%", "%%").replace("?", "%s"), values);
-        System.out.println(ret);
+        ServerSingleton.getInstance().log(ret);
         return ret;
     }
 

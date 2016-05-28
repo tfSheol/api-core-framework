@@ -1,6 +1,7 @@
 package Core.Singleton;
 
 import Core.Http.Code;
+import Core.Http.Logger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,15 +10,20 @@ import java.util.HashMap;
  * Created by teddy on 05/05/2016.
  */
 public class ServerSingleton {
-    private static ServerSingleton instance = new ServerSingleton();
     private ArrayList<HashMap<String, Object>> httpRequest = new ArrayList<>();
     private String hostIp;
+    private Logger logger = new Logger();
 
     private ServerSingleton() {
+        logger.start();
+    }
+
+    private static class SingletonHolder {
+        private final static ServerSingleton instance = new ServerSingleton();
     }
 
     public static ServerSingleton getInstance() {
-        return instance;
+        return SingletonHolder.instance;
     }
 
     public void setHostIp(String hostIp) {
@@ -59,5 +65,13 @@ public class ServerSingleton {
                 httpRequest.remove(i);
             }
         }
+    }
+
+    public void log(String string) {
+        logger.setLogMsg(string);
+    }
+
+    public void closeLogger() {
+        logger.closeFile();
     }
 }

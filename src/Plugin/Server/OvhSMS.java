@@ -1,6 +1,7 @@
 package Plugin.Server;
 
 import Core.Model;
+import Core.Singleton.ServerSingleton;
 import Core.Singleton.UserSecuritySingleton;
 
 import java.io.BufferedReader;
@@ -27,7 +28,7 @@ public class OvhSMS extends Model {
 
             String toSign = AS + "+" + CK + "+" + METHOD + "+" + QUERY + "+" + BODY + "+" + TSTAMP;
             String signature = "$1$" + UserSecuritySingleton.hashSHA1(toSign);
-            System.out.println(signature);
+            ServerSingleton.getInstance().log(signature);
 
             HttpURLConnection req = (HttpURLConnection) QUERY.openConnection();
             req.setRequestMethod(METHOD);

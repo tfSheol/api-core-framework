@@ -33,11 +33,11 @@ public class Router {
                     if (methods.isAnnotationPresent(Route.class) && methods.isAnnotationPresent(Methode.class)) {
                         if (parseRouteParameters(methods.getAnnotation(Route.class).value(), route) && methods.getAnnotation(Methode.class).value().equals(method)) {
                             try {
-                                System.out.println("[SERVER] -> " + socket + " execute " + route);
+                                ServerSingleton.getInstance().log("[SERVER] -> " + socket + " execute " + route);
                                 Object[] params = {socket, oauth2, headerField, jsonObject, args};
                                 Object returnObj = methods.invoke(obj.newInstance(), params);
                                 String json = gson.toJson(returnObj);
-                                System.out.println("[SERVER] -> " + json);
+                                ServerSingleton.getInstance().log("[SERVER] -> " + json);
                                 return json;
                             } catch (IllegalAccessException | InvocationTargetException | InstantiationException e) {
                                 System.err.println("[SERVER] -> " + socket + " error on route finder : " + e);
@@ -48,14 +48,14 @@ public class Router {
             } else {
                 ServerSingleton.getInstance().setHttpCode(socket, Code.UNAUTHORIZED);
                 String json = gson.toJson(new Error(socket, method, route, Code.UNAUTHORIZED));
-                System.out.println("[SERVER] -> " + json);
+                ServerSingleton.getInstance().log("[SERVER] -> " + json);
                 return json;
             }
             UserSecuritySingleton.getInstance().setUserOffline(socket);
         }
         ServerSingleton.getInstance().setHttpCode(socket, Code.METHOD_NOT_ALLOWED);
         String json = gson.toJson(new Error(socket, method, route, Code.METHOD_NOT_ALLOWED));
-        System.out.println("[SERVER] -> " + json);
+        ServerSingleton.getInstance().log("[SERVER] -> " + json);
         return json;
     }
 

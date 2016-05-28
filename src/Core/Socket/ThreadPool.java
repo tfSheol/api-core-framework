@@ -48,11 +48,11 @@ public class ThreadPool extends Thread {
         } catch (SocketException e1) {
             System.err.println("[SERVER] -> Unable to set acceptor timeout value. The server may not shutdown gracefully.");
         }
-        System.out.println("[SERVER] -> Accepting incoming connections on port " + listenSocket.getLocalPort());
+        ServerSingleton.getInstance().log("[SERVER] -> Accepting incoming connections on port " + listenSocket.getLocalPort());
         while (keepRunning) {
             try {
                 final Socket clientSocket = listenSocket.accept();
-                System.out.println("[SERVER] -> Accepted connection from " + clientSocket.getRemoteSocketAddress());
+                ServerSingleton.getInstance().log("[SERVER] -> Accepted connection from " + clientSocket.getRemoteSocketAddress());
                 ServerSingleton.getInstance().addHttpRequest(clientSocket.getRemoteSocketAddress().toString());
                 NbClientsSingleton.getInstance().addClient();
                 ClientHandler handler = new ClientHandler(clientSocket);
@@ -69,11 +69,12 @@ public class ThreadPool extends Thread {
         } catch (IOException ioe) {
             System.err.println("[SERVER] -> IOException : " + ioe);
         }
-        System.out.println("[SERVER] -> Stopped accepting incoming connections.");
+        ServerSingleton.getInstance().log("[SERVER] -> Stopped accepting incoming connections.");
     }
 
     public void shutdown() {
-        System.out.println("[SERVER] -> Shutting down the server.");
+        ServerSingleton.getInstance().log("[SERVER] -> Shutting down the server.");
+        ServerSingleton.getInstance().closeLogger();
         NbClientsSingleton.getInstance().razClient();
         keepRunning = false;
         workers.shutdownNow();

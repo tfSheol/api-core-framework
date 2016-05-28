@@ -1,5 +1,7 @@
 package Core.Database;
 
+import Core.Singleton.ServerSingleton;
+
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -43,19 +45,19 @@ public class SQLite {
 
     public void insert() {
         SQLiteJDBC sql = new SQLiteJDBC(database);
-        System.out.println("DEBUG INSERT " + request);
+        ServerSingleton.getInstance().log("DEBUG INSERT " + request);
         sql.insertDB(request);
     }
 
     public void update() {
         SQLiteJDBC sql = new SQLiteJDBC(database);
-        System.out.println("DEBUG UPDATE " + request);
+        ServerSingleton.getInstance().log("DEBUG UPDATE " + request);
         sql.updateDB(request);
     }
 
     public void delete() {
         SQLiteJDBC sql = new SQLiteJDBC(database);
-        System.out.println("DEBUG DELETE " + request);
+        ServerSingleton.getInstance().log("DEBUG DELETE " + request);
         sql.deleteDB(request);
     }
 }

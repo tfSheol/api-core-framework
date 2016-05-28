@@ -2,6 +2,7 @@ package Plugin.Server;
 
 import Core.Http.Code;
 import Core.Model;
+import Core.Singleton.ServerSingleton;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -21,25 +22,25 @@ public class Email extends Model {
 
     public Email send(String socket, String subject, String emailBody) {
         try {
-            System.out.println("[SYSTEM] -> setup Mail Server Properties..");
+            ServerSingleton.getInstance().log("[SYSTEM] -> setup Mail Server Properties..");
             mailServerProperties = System.getProperties();
             mailServerProperties.put("mail.smtp.port", "587");
             mailServerProperties.put("mail.smtp.auth", "true");
             mailServerProperties.put("mail.smtp.starttls.enable", "true");
-            System.out.println("[SYSTEM] -> Mail Server Properties have been setup successfully..");
-            System.out.println("[SYSTEM] -> get Mail Session..");
+            ServerSingleton.getInstance().log("[SYSTEM] -> Mail Server Properties have been setup successfully..");
+            ServerSingleton.getInstance().log("[SYSTEM] -> get Mail Session..");
             getMailSession = Session.getDefaultInstance(mailServerProperties, null);
             generateMailMessage = new MimeMessage(getMailSession);
             generateMailMessage.addRecipient(Message.RecipientType.TO, new InternetAddress("tf.sheol@gmail.com"));
             generateMailMessage.setSubject(subject);
             generateMailMessage.setContent(emailBody, "text/html");
-            System.out.println("[SYSTEM] -> Mail Session has been created successfully..");
-            System.out.println("[SYSTEM] -> Get Session and Send mail");
+            ServerSingleton.getInstance().log("[SYSTEM] -> Mail Session has been created successfully..");
+            ServerSingleton.getInstance().log("[SYSTEM] -> Get Session and Send mail");
             Transport transport = getMailSession.getTransport("smtp");
             transport.connect("smtp.gmail.com", "tf.sheol", "hvubwmmjdusluqon");
             transport.sendMessage(generateMailMessage, generateMailMessage.getAllRecipients());
             transport.close();
-            System.out.println("[SYSTEM] -> mail as sent !");
+            ServerSingleton.getInstance().log("[SYSTEM] -> mail as sent !");
             setNoReturnValue(socket);
         } catch (MessagingException e) {
             setCode(socket, Code.INTERNAL_SERVER_ERROR);

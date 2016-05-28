@@ -1,4 +1,5 @@
 import Core.Singleton.ConfigSingleton;
+import Core.Singleton.ServerSingleton;
 import Core.Socket.ThreadPool;
 
 /**
@@ -20,7 +21,7 @@ public class Main {
         server.start();
         try {
             server.join();
-            System.out.println("[SERVER] -> Completed shutdown.");
+            ServerSingleton.getInstance().log("[SERVER] -> Completed shutdown.");
         } catch (InterruptedException e) {
             System.err.println("[SERVER] -> Interrupted before accept thread completed.");
             System.exit(1);

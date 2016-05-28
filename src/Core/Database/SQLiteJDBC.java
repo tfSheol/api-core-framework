@@ -1,5 +1,7 @@
 package Core.Database;
 
+import Core.Singleton.ServerSingleton;
+
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
@@ -11,7 +13,7 @@ public class SQLiteJDBC extends SQL {
             stmt = c.createStatement();
             c.setAutoCommit(false);
         } catch (ClassNotFoundException | SQLException e) {
-            System.out.println("SQLException: " + e.getMessage());
+            ServerSingleton.getInstance().log("SQLException: " + e.getMessage());
         }
     }
 }

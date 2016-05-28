@@ -20,24 +20,12 @@ public class UserSecuritySingleton {
         addUser(1, "Sheol", hashSHA1("Plugin.Server.Controller.test"), PermsSingleton.MEMBER);
         addUser(2, "Admin", hashSHA1("admin"), PermsSingleton.ADMIN);
         addUser(3, "Modo", hashSHA1("modo"), PermsSingleton.MODO);
-        System.out.println(hashSHA1("admin"));
-        System.out.println("[SYSTEM] -> Nb users loaded: " + nbUsers);
+        ServerSingleton.getInstance().log("[SYSTEM] -> Nb users loaded: " + nbUsers);
     }
 
     public static UserSecuritySingleton getInstance() {
         return instance;
     }
-
-    /*public static String hashString(String str) {
-        String ret = "";
-        int hash = ConfigSingleton.getInstance().getSalt();
-        for (int i = 0; i < str.length(); i++) {
-            hash = hash * 31 + str.charAt(i);
-            ret = ret.concat(Integer.toString(hash));
-        }
-        return ret;
-    }*/
-
 
     public static String hashSHA1(String text) {
         MessageDigest md;
@@ -126,7 +114,7 @@ public class UserSecuritySingleton {
         for (HashMap<String, Object> user : users) {
             if (user.get("token") != "") {
                 if (((long) user.get("expires_in") + (ConfigSingleton.getInstance().getTokenExpires() * 1000)) < System.currentTimeMillis()) {
-                    System.out.println("[SYSTEM] -> User: " + user.get("username") + " token's revoked");
+                    ServerSingleton.getInstance().log("[SYSTEM] -> User: " + user.get("username") + " token's revoked");
                     user.replace("token", "");
                     user.replace("expires_in", 0);
                 }
