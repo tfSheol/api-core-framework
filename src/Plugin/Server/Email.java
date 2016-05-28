@@ -22,25 +22,25 @@ public class Email extends Model {
 
     public Email send(String socket, String subject, String emailBody) {
         try {
-            ServerSingleton.getInstance().log("[SYSTEM] -> setup Mail Server Properties..");
+            ServerSingleton.getInstance().log(socket, "[SYSTEM] -> setup Mail Server Properties..");
             mailServerProperties = System.getProperties();
             mailServerProperties.put("mail.smtp.port", "587");
             mailServerProperties.put("mail.smtp.auth", "true");
             mailServerProperties.put("mail.smtp.starttls.enable", "true");
-            ServerSingleton.getInstance().log("[SYSTEM] -> Mail Server Properties have been setup successfully..");
-            ServerSingleton.getInstance().log("[SYSTEM] -> get Mail Session..");
+            ServerSingleton.getInstance().log(socket, "[SYSTEM] -> Mail Server Properties have been setup successfully..");
+            ServerSingleton.getInstance().log(socket, "[SYSTEM] -> get Mail Session..");
             getMailSession = Session.getDefaultInstance(mailServerProperties, null);
             generateMailMessage = new MimeMessage(getMailSession);
             generateMailMessage.addRecipient(Message.RecipientType.TO, new InternetAddress("tf.sheol@gmail.com"));
             generateMailMessage.setSubject(subject);
             generateMailMessage.setContent(emailBody, "text/html");
-            ServerSingleton.getInstance().log("[SYSTEM] -> Mail Session has been created successfully..");
-            ServerSingleton.getInstance().log("[SYSTEM] -> Get Session and Send mail");
+            ServerSingleton.getInstance().log(socket, "[SYSTEM] -> Mail Session has been created successfully..");
+            ServerSingleton.getInstance().log(socket, "[SYSTEM] -> Get Session and Send mail");
             Transport transport = getMailSession.getTransport("smtp");
             transport.connect("smtp.gmail.com", "tf.sheol", "hvubwmmjdusluqon");
             transport.sendMessage(generateMailMessage, generateMailMessage.getAllRecipients());
             transport.close();
-            ServerSingleton.getInstance().log("[SYSTEM] -> mail as sent !");
+            ServerSingleton.getInstance().log(socket, "[SYSTEM] -> mail as sent !");
             setNoReturnValue(socket);
         } catch (MessagingException e) {
             setCode(socket, Code.INTERNAL_SERVER_ERROR);

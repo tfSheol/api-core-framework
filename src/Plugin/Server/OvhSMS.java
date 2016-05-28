@@ -28,7 +28,7 @@ public class OvhSMS extends Model {
 
             String toSign = AS + "+" + CK + "+" + METHOD + "+" + QUERY + "+" + BODY + "+" + TSTAMP;
             String signature = "$1$" + UserSecuritySingleton.hashSHA1(toSign);
-            ServerSingleton.getInstance().log(signature);
+            ServerSingleton.getInstance().log("OVH", signature);
 
             HttpURLConnection req = (HttpURLConnection) QUERY.openConnection();
             req.setRequestMethod(METHOD);

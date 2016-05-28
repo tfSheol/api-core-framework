@@ -56,7 +56,7 @@ public class Path {
     @Methode("GET")
     @Route("/test/{limit}/{id}")
     public TestModel getTest(String socket, Oauth2 oauth2, HashMap<String, String> headerField, JSONObject jsonObject, HashMap<String, Object> args) {
-        ServerSingleton.getInstance().log("[DEBUG] -> " + args.get("limit") + " " + args.get("id"));
+        ServerSingleton.getInstance().log(socket, "[DEBUG] -> " + args.get("limit") + " " + args.get("id"));
         return new TestModel();
     }
 

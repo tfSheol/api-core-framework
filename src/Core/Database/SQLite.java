@@ -45,19 +45,19 @@ public class SQLite {
 
     public void insert() {
         SQLiteJDBC sql = new SQLiteJDBC(database);
-        ServerSingleton.getInstance().log("DEBUG INSERT " + request);
+        ServerSingleton.getInstance().log("local", "DEBUG INSERT " + request);
         sql.insertDB(request);
     }
 
     public void update() {
         SQLiteJDBC sql = new SQLiteJDBC(database);
-        ServerSingleton.getInstance().log("DEBUG UPDATE " + request);
+        ServerSingleton.getInstance().log("local", "DEBUG UPDATE " + request);
         sql.updateDB(request);
     }
 
     public void delete() {
         SQLiteJDBC sql = new SQLiteJDBC(database);
-        ServerSingleton.getInstance().log("DEBUG DELETE " + request);
+        ServerSingleton.getInstance().log("local", "DEBUG DELETE " + request);
         sql.deleteDB(request);
     }
 }

@@ -14,7 +14,7 @@ Des examples sont d'utilisation et de connexion sont présents dans le dossier `
 * [-] Perms chargés depuis un fichier
 * [-] Revoke auto d'un token
 * [-] Ajouter le temps de vie d'un token dans le fichier de conf
-* [ ] Ajout d'un logger pour l'api
+* [-] Ajout d'un logger pour l'api
 * [ ] Ajout d'un logger pour les actions utilisateur
 * [-] Hash password perso
 * [-] Ajout SingleTone make return header

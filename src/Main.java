@@ -21,7 +21,7 @@ public class Main {
         server.start();
         try {
             server.join();
-            ServerSingleton.getInstance().log("[SERVER] -> Completed shutdown.");
+            ServerSingleton.getInstance().log("local", "[SERVER] -> Completed shutdown.");
         } catch (InterruptedException e) {
             System.err.println("[SERVER] -> Interrupted before accept thread completed.");
             System.exit(1);

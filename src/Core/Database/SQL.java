@@ -26,9 +26,7 @@ public class SQL {
                 }
             }
         }
-        String ret = String.format(subject.replace("%", "%%").replace("?", "%s"), values);
-        ServerSingleton.getInstance().log(ret);
-        return ret;
+        return String.format(subject.replace("%", "%%").replace("?", "%s"), values);
     }
 
     public void insertDB(String sql) {

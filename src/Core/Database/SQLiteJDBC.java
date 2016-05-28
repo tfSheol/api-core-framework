@@ -13,7 +13,7 @@ public class SQLiteJDBC extends SQL {
             stmt = c.createStatement();
             c.setAutoCommit(false);
         } catch (ClassNotFoundException | SQLException e) {
-            ServerSingleton.getInstance().log("SQLException: " + e.getMessage());
+            ServerSingleton.getInstance().log("local", "SQLException: " + e.getMessage());
         }
     }
 }

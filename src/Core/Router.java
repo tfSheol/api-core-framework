@@ -33,11 +33,11 @@ public class Router {
                     if (methods.isAnnotationPresent(Route.class) && methods.isAnnotationPresent(Methode.class)) {
                         if (parseRouteParameters(methods.getAnnotation(Route.class).value(), route) && methods.getAnnotation(Methode.class).value().equals(method)) {
                             try {
-                                ServerSingleton.getInstance().log("[SERVER] -> " + socket + " execute " + route);
+                                ServerSingleton.getInstance().log(socket, "[SERVER] -> " + socket + " execute " + route);
                                 Object[] params = {socket, oauth2, headerField, jsonObject, args};
                                 Object returnObj = methods.invoke(obj.newInstance(), params);
                                 String json = gson.toJson(returnObj);
-                                ServerSingleton.getInstance().log("[SERVER] -> " + json);
+                                ServerSingleton.getInstance().log(socket, "[SERVER] -> " + json);
                                 return json;
                             } catch (IllegalAccessException | InvocationTargetException | InstantiationException e) {
                                 System.err.println("[SERVER] -> " + socket + " error on route finder : " + e);
@@ -48,14 +48,14 @@ public class Router {
             } else {
                 ServerSingleton.getInstance().setHttpCode(socket, Code.UNAUTHORIZED);
                 String json = gson.toJson(new Error(socket, method, route, Code.UNAUTHORIZED));
-                ServerSingleton.getInstance().log("[SERVER] -> " + json);
+                ServerSingleton.getInstance().log(socket, "[SERVER] -> " + json);
                 return json;
             }
             UserSecuritySingleton.getInstance().setUserOffline(socket);
         }
         ServerSingleton.getInstance().setHttpCode(socket, Code.METHOD_NOT_ALLOWED);
         String json = gson.toJson(new Error(socket, method, route, Code.METHOD_NOT_ALLOWED));
-        ServerSingleton.getInstance().log("[SERVER] -> " + json);
+        ServerSingleton.getInstance().log(socket, "[SERVER] -> " + json);
         return json;
     }
 

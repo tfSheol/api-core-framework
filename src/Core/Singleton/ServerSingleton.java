@@ -67,8 +67,8 @@ public class ServerSingleton {
         }
     }
 
-    public void log(String string) {
-        logger.setLogMsg(string);
+    public void log(String socket, String string) {
+        logger.setLogMsg(socket, string);
     }
 
     public void closeLogger() {
