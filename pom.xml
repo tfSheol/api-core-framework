@@ -82,6 +82,8 @@
                                 <copy file="./config.properties" tofile="${basedir}/target/config.properties"/>
                                 <echo>Add Routes file</echo>
                                 <copy file="./route.properties" tofile="${basedir}/target/route.properties"/>
+                                <echo>Add Ip file</echo>
+                                <copy file="./ip.properties" tofile="${basedir}/target/ip.properties"/>
                                 <echo>Add Database</echo>
                                 <copy file="./db/data.db" tofile="${basedir}/target/db/data.db"/>
                                 <echo>Add Launcher script</echo>

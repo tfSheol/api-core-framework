@@ -4,6 +4,7 @@ import Core.Http.Code;
 import Core.Http.Error;
 import Core.Http.Oauth2;
 import Core.Http.Oauth2Permissions;
+import Core.Singleton.IpSingleton;
 import Core.Singleton.ServerSingleton;
 import Core.Singleton.UserSecuritySingleton;
 import Plugin.Path;
@@ -40,7 +41,7 @@ public class Router {
                                 ServerSingleton.getInstance().log(socket, "[SERVER] -> " + json);
                                 return json;
                             } catch (IllegalAccessException | InvocationTargetException | InstantiationException e) {
-                                System.err.println("[SERVER] -> " + socket + " error on route finder : " + e);
+                                ServerSingleton.getInstance().log("[SERVER] -> " + socket + " error on route finder : " + e, true);
                             }
                         }
                     }
@@ -56,6 +57,7 @@ public class Router {
         ServerSingleton.getInstance().setHttpCode(socket, Code.METHOD_NOT_ALLOWED);
         String json = gson.toJson(new Error(socket, method, route, Code.METHOD_NOT_ALLOWED));
         ServerSingleton.getInstance().log(socket, "[SERVER] -> " + json);
+        IpSingleton.getInstance().setIpFail(socket.split(":")[0].replace("/", ""));
         return json;
     }
 

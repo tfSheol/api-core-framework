@@ -15,10 +15,10 @@ Des examples sont d'utilisation et de connexion sont présents dans le dossier `
 * [-] Revoke auto d'un token
 * [-] Ajouter le temps de vie d'un token dans le fichier de conf
 * [-] Ajout d'un logger pour l'api
-* [ ] Ajout d'un logger pour les actions utilisateur
+* [-] Ajout d'un logger pour les actions utilisateur
 * [-] Hash password perso
 * [-] Ajout SingleTone make return header
 * [-] Salt dans le fichier config
 * [-] Route pour revoke un token
 * [-] Parsing des params GET
-* [ ] System de banissement
+* [-] System de banissement

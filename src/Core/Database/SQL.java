@@ -1,6 +1,7 @@
 package Core.Database;
 
 import Core.Singleton.ServerSingleton;
+import Plugin.Server.Server;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -34,7 +35,7 @@ public class SQL {
             stmt.executeUpdate(sql);
             c.commit();
         } catch (SQLException e) {
-            System.err.println("SQLException: " + e.getMessage());
+            ServerSingleton.getInstance().log("SQLException: " + e.getMessage(), true);
         }
     }
 
@@ -43,7 +44,7 @@ public class SQL {
             stmt.executeUpdate(sql);
             c.commit();
         } catch (SQLException e) {
-            System.err.println("SQLException: " + e.getMessage());
+            ServerSingleton.getInstance().log("SQLException: " + e.getMessage(), true);
         }
     }
 
@@ -52,7 +53,7 @@ public class SQL {
             stmt.executeUpdate(sql);
             c.commit();
         } catch (SQLException e) {
-            System.err.println("SQLException: " + e.getMessage());
+            ServerSingleton.getInstance().log("SQLException: " + e.getMessage(), true);
         }
     }
 
@@ -62,7 +63,7 @@ public class SQL {
             c.commit();
             return result;
         } catch (SQLException e) {
-            System.err.println("SQLException: " + e.getMessage());
+            ServerSingleton.getInstance().log("SQLException: " + e.getMessage(), true);
         }
         return null;
     }
@@ -72,7 +73,7 @@ public class SQL {
             stmt.close();
             c.close();
         } catch (SQLException e) {
-            System.err.println("SQLException: " + e.getMessage());
+            ServerSingleton.getInstance().log("SQLException: " + e.getMessage(), true);
         }
     }
 }

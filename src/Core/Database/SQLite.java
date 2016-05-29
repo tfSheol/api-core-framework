@@ -38,26 +38,26 @@ public class SQLite {
                 entities.add(data);
             }
         } catch (SQLException e) {
-            System.err.println("SELECT : " + e);
+            ServerSingleton.getInstance().log("SELECT : " + e, true);
         }
         sql.closeDB();
     }
 
     public void insert() {
         SQLiteJDBC sql = new SQLiteJDBC(database);
-        ServerSingleton.getInstance().log("local", "DEBUG INSERT " + request);
+        ServerSingleton.getInstance().log("DEBUG INSERT " + request);
         sql.insertDB(request);
     }
 
     public void update() {
         SQLiteJDBC sql = new SQLiteJDBC(database);
-        ServerSingleton.getInstance().log("local", "DEBUG UPDATE " + request);
+        ServerSingleton.getInstance().log("DEBUG UPDATE " + request);
         sql.updateDB(request);
     }
 
     public void delete() {
         SQLiteJDBC sql = new SQLiteJDBC(database);
-        ServerSingleton.getInstance().log("local", "DEBUG DELETE " + request);
+        ServerSingleton.getInstance().log("DEBUG DELETE " + request);
         sql.deleteDB(request);
     }
 }

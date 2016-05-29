@@ -14,16 +14,16 @@ public class Main {
             System.exit(1);
         }
         if (port <= 0 || port > 65536) {
-            System.err.println("[SERVER] -> Port value must be in (0, 65535].");
+            ServerSingleton.getInstance().log("[SERVER] -> Port value must be in (0, 65535].", true);
             System.exit(1);
         }
         final ThreadPool server = new ThreadPool(port);
         server.start();
         try {
             server.join();
-            ServerSingleton.getInstance().log("local", "[SERVER] -> Completed shutdown.");
+            ServerSingleton.getInstance().log("[SERVER] -> Completed shutdown.");
         } catch (InterruptedException e) {
-            System.err.println("[SERVER] -> Interrupted before accept thread completed.");
+            ServerSingleton.getInstance().log("[SERVER] -> Interrupted before accept thread completed.", true);
             System.exit(1);
         }
     }

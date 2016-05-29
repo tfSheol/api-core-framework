@@ -51,7 +51,7 @@ public class ClientHandler implements Runnable {
                             }
                         }
                         Router router = new Router();
-                        ServerSingleton.getInstance().log(clientId, "[USER] -> " + clientId + " " + method + " " + route);
+                        ServerSingleton.getInstance().log(clientId, "[USER] -> " + method + " " + route);
                         JSONObject jsonObject = new JSONObject();
                         if (Router.isJSONValid(jsonClient)) {
                             jsonObject = new JSONObject(jsonClient);
@@ -68,12 +68,12 @@ public class ClientHandler implements Runnable {
             userInput.close();
             userOutput.close();
             UserSecuritySingleton.getInstance().setUserOffline(clientId);
-            ServerSingleton.getInstance().log(clientId, "[SERVER] -> Close connection to " + clientId);
+            ServerSingleton.getInstance().log("[SERVER] -> Close connection to " + clientId);
             ServerSingleton.getInstance().removeHttpRequest(clientId);
             clientSock.close();
             NbClientsSingleton.getInstance().delClient();
         } catch (IOException ioe) {
-            System.err.print("IOException : " + ioe);
+            ServerSingleton.getInstance().log("IOException : " + ioe, true);
         }
     }
 

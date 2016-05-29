@@ -32,9 +32,9 @@ public class PermsSingleton {
                     addRoute(routeData[0], routeData[1], Integer.parseInt(e.getValue().toString()));
                 }
             }
-            ServerSingleton.getInstance().log("local", "[SYSTEM] -> Nb perms loaded: " + permsNb);
+            ServerSingleton.getInstance().log("[SYSTEM] -> Nb perms loaded: " + permsNb);
         } catch (IOException ex) {
-            System.err.println("IOException : " + ex);
+            ServerSingleton.getInstance().log("IOException : " + ex, true);
         }
     }
 
@@ -43,7 +43,7 @@ public class PermsSingleton {
     }
 
     public void addRoute(String method, String route, int minusGroup) {
-        ServerSingleton.getInstance().log("local", "[PERM] -> method: " + method + " - route: " + route + " - minimum power: " + minusGroup);
+        ServerSingleton.getInstance().log("[PERM] -> method: " + method + " - route: " + route + " - minimum power: " + minusGroup);
         HashMap<String, Object> perm = new HashMap<>();
         perm.put("method", method);
         perm.put("route", route);

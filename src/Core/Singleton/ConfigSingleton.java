@@ -17,7 +17,7 @@ public class ConfigSingleton {
             props.load(reader);
             reader.close();
         } catch (IOException ex) {
-            System.err.println("IOException : " + ex);
+            ServerSingleton.getInstance().log("IOException : " + ex, true);
         }
     }
 
@@ -55,6 +55,10 @@ public class ConfigSingleton {
 
     public String getSalt() {
         return props.getProperty("salt");
+    }
+
+    public String getMaxAttempt() {
+        return props.getProperty("max_attempt");
     }
 
     public void setProps(String key, String value, String store) {

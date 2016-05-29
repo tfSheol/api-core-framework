@@ -2,6 +2,7 @@ package Core.Singleton;
 
 import Core.Http.Code;
 import Core.Http.Logger;
+import Core.Http.LoggerService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,6 +17,7 @@ public class ServerSingleton {
 
     private ServerSingleton() {
         logger.start();
+        new LoggerService().start();
     }
 
     private static class SingletonHolder {
@@ -67,8 +69,32 @@ public class ServerSingleton {
         }
     }
 
+    public void log(String string) {
+        logger.setLogMsg(string);
+    }
+
+    public void log(String string, boolean error) {
+        logger.setLogMsg(string, error);
+    }
+
     public void log(String socket, String string) {
         logger.setLogMsg(socket, string);
+    }
+
+    public void log(String socket, String string, boolean error) {
+        logger.setLogMsg(socket, string, error);
+    }
+
+    public String getCurrentDay() {
+        return logger.getCurrentDay();
+    }
+
+    public void setCurrentDay() {
+        logger.setCurrentDay();
+    }
+
+    public void setNewLog() {
+        logger.setNewLog();
     }
 
     public void closeLogger() {
