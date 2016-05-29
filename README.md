@@ -8,7 +8,6 @@ Des examples sont d'utilisation et de connexion sont présents dans le dossier `
 * [-] Optimisation de la sécurité
 * [-] Gestion des perms selon le groupe et la route
 * [-] Restriction de l'api au application JSON seulement
-* [ ] Intégration de Oauth2.0 à double token
 * [-] Autorisation des méthodes GET, POST, PUT & DELETE
 * [-] Fichier de config
 * [-] Perms chargés depuis un fichier

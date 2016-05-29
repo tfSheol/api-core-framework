@@ -10,4 +10,8 @@ public class ServerObj {
     public int socket_timeout;
     public String name;
     public String version;
+    public long used_memory;
+    public long free_memory;
+    public long total_available_memory;
+    public long maximum_available_memory;
 }

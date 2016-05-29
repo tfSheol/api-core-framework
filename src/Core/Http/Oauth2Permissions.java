@@ -3,7 +3,6 @@ package Core.Http;
 import Core.Route;
 import Core.Singleton.PermsSingleton;
 import Core.Singleton.UserSecuritySingleton;
-import Plugin.Path;
 
 import java.lang.reflect.Method;
 
@@ -11,7 +10,7 @@ import java.lang.reflect.Method;
  * Created by teddy on 21/05/2016.
  */
 public class Oauth2Permissions {
-    public boolean checkPermsRoute(String socket, Oauth2 oauth2, String method, String userRoute, Class<Path> obj, String oauth2Type) {
+    public boolean checkPermsRoute(String socket, Oauth2 oauth2, String method, String userRoute, Class<?> obj, String oauth2Type) {
         String route = getGenericRoute(userRoute, obj);
         if (oauth2.getType() != null) {
             if (oauth2Type.equals(Oauth2.BASIC) && userRoute.equals("/oauth") && method.equals("POST")) {
@@ -32,7 +31,7 @@ public class Oauth2Permissions {
         return false;
     }
 
-    private String getGenericRoute(String route, Class<Path> obj) {
+    private String getGenericRoute(String route, Class<?> obj) {
         for (Method methods : obj.getDeclaredMethods()) {
             if (methods.isAnnotationPresent(Route.class) && parseRouteParameters(methods.getAnnotation(Route.class).value(), route)) {
                 return methods.getAnnotation(Route.class).value();

@@ -1,4 +1,4 @@
-package Plugin.Server;
+package Plugin.Server.Model;
 
 import Core.Model;
 import Core.Singleton.ServerSingleton;
@@ -13,12 +13,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
 
-public class OvhSMS extends Model {
+public class OvhSMSModel extends Model {
     private String AK = "Nz5fHXudcHrms83b";
     private String AS = "u9HpdrTrH9B7b4yb4hpKGhyA4N5mAFSO";
     private String CK = "vpV2pf0dMioB9RRo3CKxhtAnJk1FupQP";
 
-    public OvhSMS sendSms() {
+    public OvhSMSModel sendSms() {
         String ServiceName = getSmsAccount();
         String METHOD = "POST";
         try {

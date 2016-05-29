@@ -1,7 +1,6 @@
 package Core.Database;
 
 import Core.Singleton.ServerSingleton;
-import Plugin.Server.Server;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;

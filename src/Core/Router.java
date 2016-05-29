@@ -7,15 +7,16 @@ import Core.Http.Oauth2Permissions;
 import Core.Singleton.IpSingleton;
 import Core.Singleton.ServerSingleton;
 import Core.Singleton.UserSecuritySingleton;
-import Plugin.Path;
 import com.google.gson.Gson;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.reflections.Reflections;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.Set;
 
 /**
  * Created by teddy on 04/05/2016.
@@ -24,35 +25,38 @@ public class Router {
     private HashMap<String, Object> args = new HashMap<>();
 
     public String find(String socket, String method, String route, HashMap<String, String> headerField, JSONObject jsonObject) {
-        Class<Path> obj = Path.class;
+        Reflections reflections = new Reflections("Plugin.*");
+        Set<Class<?>> annotated = reflections.getTypesAnnotatedWith(Controller.class);
         Gson gson = new Gson();
-        Oauth2 oauth2 = new Oauth2((headerField.containsKey("Authorization")) ? headerField.get("Authorization") : null);
-        Oauth2Permissions oauth2Permissions = new Oauth2Permissions();
-        if ((!route.equals("/oauth")) || (oauth2.getType() != null && oauth2.getType().equals(Oauth2.BASIC) && route.equals("/oauth"))) {
-            if (oauth2Permissions.checkPermsRoute(socket, oauth2, method, route, obj, oauth2.getType())) {
-                for (Method methods : obj.getDeclaredMethods()) {
-                    if (methods.isAnnotationPresent(Route.class) && methods.isAnnotationPresent(Methode.class)) {
-                        if (parseRouteParameters(methods.getAnnotation(Route.class).value(), route) && methods.getAnnotation(Methode.class).value().equals(method)) {
-                            try {
-                                ServerSingleton.getInstance().log(socket, "[SERVER] -> " + socket + " execute " + route);
-                                Object[] params = {socket, oauth2, headerField, jsonObject, args};
-                                Object returnObj = methods.invoke(obj.newInstance(), params);
-                                String json = gson.toJson(returnObj);
-                                ServerSingleton.getInstance().log(socket, "[SERVER] -> " + json);
-                                return json;
-                            } catch (IllegalAccessException | InvocationTargetException | InstantiationException e) {
-                                ServerSingleton.getInstance().log("[SERVER] -> " + socket + " error on route finder : " + e, true);
+        for (Class<?> obj : annotated) {
+            Oauth2 oauth2 = new Oauth2((headerField.containsKey("Authorization")) ? headerField.get("Authorization") : null);
+            Oauth2Permissions oauth2Permissions = new Oauth2Permissions();
+            if ((!route.equals("/oauth")) || (oauth2.getType() != null && oauth2.getType().equals(Oauth2.BASIC) && route.equals("/oauth"))) {
+                if (oauth2Permissions.checkPermsRoute(socket, oauth2, method, route, obj, oauth2.getType())) {
+                    for (Method methods : obj.getDeclaredMethods()) {
+                        if (methods.isAnnotationPresent(Route.class) && methods.isAnnotationPresent(Methode.class)) {
+                            if (parseRouteParameters(methods.getAnnotation(Route.class).value(), route) && methods.getAnnotation(Methode.class).value().equals(method)) {
+                                try {
+                                    ServerSingleton.getInstance().log(socket, "[SERVER] -> " + socket + " execute " + route);
+                                    Object[] params = {socket, oauth2, headerField, jsonObject, args};
+                                    Object returnObj = methods.invoke(obj.newInstance(), params);
+                                    String json = gson.toJson(returnObj);
+                                    ServerSingleton.getInstance().log(socket, "[SERVER] -> " + json);
+                                    return json;
+                                } catch (IllegalAccessException | InvocationTargetException | InstantiationException e) {
+                                    ServerSingleton.getInstance().log("[SERVER] -> " + socket + " error on route finder : " + e, true);
+                                }
                             }
                         }
                     }
+                } else {
+                    ServerSingleton.getInstance().setHttpCode(socket, Code.UNAUTHORIZED);
+                    String json = gson.toJson(new Error(socket, method, route, Code.UNAUTHORIZED));
+                    ServerSingleton.getInstance().log(socket, "[SERVER] -> " + json);
+                    return json;
                 }
-            } else {
-                ServerSingleton.getInstance().setHttpCode(socket, Code.UNAUTHORIZED);
-                String json = gson.toJson(new Error(socket, method, route, Code.UNAUTHORIZED));
-                ServerSingleton.getInstance().log(socket, "[SERVER] -> " + json);
-                return json;
+                UserSecuritySingleton.getInstance().setUserOffline(socket);
             }
-            UserSecuritySingleton.getInstance().setUserOffline(socket);
         }
         ServerSingleton.getInstance().setHttpCode(socket, Code.METHOD_NOT_ALLOWED);
         String json = gson.toJson(new Error(socket, method, route, Code.METHOD_NOT_ALLOWED));

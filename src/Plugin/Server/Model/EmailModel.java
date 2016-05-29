@@ -1,4 +1,4 @@
-package Plugin.Server;
+package Plugin.Server.Model;
 
 import Core.Http.Code;
 import Core.Model;
@@ -15,19 +15,19 @@ import java.util.Properties;
 /**
  * Created by teddy on 27/05/2016.
  */
-public class Email extends Model {
+public class EmailModel extends Model {
     private Properties mailServerProperties;
     private Session getMailSession;
     private MimeMessage generateMailMessage;
 
-    public Email send(String socket, String subject, String emailBody) {
+    public EmailModel send(String socket, String subject, String emailBody) {
         try {
-            ServerSingleton.getInstance().log(socket, "[SYSTEM] -> setup Mail Server Properties..");
+            ServerSingleton.getInstance().log(socket, "[SYSTEM] -> setup Mail ServerModel Properties..");
             mailServerProperties = System.getProperties();
             mailServerProperties.put("mail.smtp.port", "587");
             mailServerProperties.put("mail.smtp.auth", "true");
             mailServerProperties.put("mail.smtp.starttls.enable", "true");
-            ServerSingleton.getInstance().log(socket, "[SYSTEM] -> Mail Server Properties have been setup successfully..");
+            ServerSingleton.getInstance().log(socket, "[SYSTEM] -> Mail ServerModel Properties have been setup successfully..");
             ServerSingleton.getInstance().log(socket, "[SYSTEM] -> get Mail Session..");
             getMailSession = Session.getDefaultInstance(mailServerProperties, null);
             generateMailMessage = new MimeMessage(getMailSession);

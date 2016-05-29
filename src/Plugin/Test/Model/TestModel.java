@@ -1,4 +1,4 @@
-package Plugin.Test;
+package Plugin.Test.Model;
 
 import Core.Model;
 import Plugin.Test.Obj.TestObj;

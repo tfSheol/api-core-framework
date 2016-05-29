@@ -1,4 +1,4 @@
-package Plugin.Artefact;
+package Plugin.Artefact.Model;
 
 import Core.Database.SQLite;
 import Core.Model;
@@ -7,7 +7,7 @@ import Plugin.Artefact.Obj.ArtefactObj;
 /**
  * Created by teddy on 07/05/2016.
  */
-public class Codex extends Model {
+public class CodexModel extends Model {
     private static String ARTEFACTS = "SELECT artefacts.id'artefacts.id',\n" +
             "artefacts.quality_id'artefacts.quality_id',\n" +
             "artefacts.collection_id'artefacts.collection_id',\n" +
@@ -39,7 +39,7 @@ public class Codex extends Model {
             "AND collections.id=artefacts.collection_id\n" +
             "AND titles.id=collections.title_id";
 
-    public Codex() {
+    public CodexModel() {
         SQLite sql = new SQLite(ARTEFACTS);
         sql.select();
         for (int i = 0; i < sql.getResultSet().size(); i++) {

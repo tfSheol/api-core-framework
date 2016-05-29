@@ -19,13 +19,13 @@ public class Model {
     protected ArrayList<Object> data = new ArrayList<>();
 
     public Model() {
-        Class<Plugin.Path> obj = Plugin.Path.class;
+        /*Class<Plugin.Path> obj = Plugin.Path.class;
         for (Method method : obj.getDeclaredMethods()) {
             if (method.getName().equals(new Exception().getStackTrace()[2].getMethodName())) {
                 this.path = method.getAnnotation(Route.class).value();
                 this.method = method.getAnnotation(Methode.class).value();
             }
-        }
+        }*/
     }
 
     public ArrayList<Object> getData() {

@@ -17,7 +17,7 @@ public class UserSecuritySingleton {
     private int nbUsers = 0;
 
     private UserSecuritySingleton() {
-        addUser(1, "Sheol", hashSHA1("Plugin.Server.Controller.test"), PermsSingleton.MEMBER);
+        addUser(1, "Sheol", hashSHA1("test"), PermsSingleton.MEMBER);
         addUser(2, "Admin", hashSHA1("admin"), PermsSingleton.ADMIN);
         addUser(3, "Modo", hashSHA1("modo"), PermsSingleton.MODO);
         ServerSingleton.getInstance().log("[SYSTEM] -> Nb users loaded: " + nbUsers);
