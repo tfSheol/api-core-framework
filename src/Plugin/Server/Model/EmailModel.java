@@ -41,7 +41,6 @@ public class EmailModel extends Model {
             transport.sendMessage(generateMailMessage, generateMailMessage.getAllRecipients());
             transport.close();
             ServerSingleton.getInstance().log(socket, "[SYSTEM] -> mail as sent !");
-            setNoReturnValue(socket);
         } catch (MessagingException e) {
             setCode(socket, Code.INTERNAL_SERVER_ERROR);
             e.printStackTrace();

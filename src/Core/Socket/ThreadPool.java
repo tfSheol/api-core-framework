@@ -29,12 +29,12 @@ public class ThreadPool extends Thread {
 
         try {
             listenSocket = new ServerSocket(port);
-            ServerSingleton.getInstance().setHostIp(String.valueOf(listenSocket.getLocalSocketAddress()));
             ConfigSingleton.getInstance();
             NbClientsSingleton.getInstance();
             PermsSingleton.getInstance();
             UserSecuritySingleton.getInstance();
             new Oauth2TokenService().start();
+            ServerSingleton.getInstance().setHostIp(String.valueOf(listenSocket.getLocalSocketAddress()));
         } catch (IOException e) {
             ServerSingleton.getInstance().log("[SERVER] -> An exception occurred while creating the listen socket: " + e.getMessage(), true);
             System.exit(1);

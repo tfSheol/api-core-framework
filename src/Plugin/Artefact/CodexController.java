@@ -1,6 +1,8 @@
 package Plugin.Artefact;
 
 import Core.Controller;
+import Core.Http.Header;
+import Core.Http.Map;
 import Core.Http.Oauth2;
 import Core.Methode;
 import Core.Route;
@@ -16,7 +18,7 @@ import java.util.HashMap;
 public class CodexController {
     @Methode("GET")
     @Route("/codex")
-    public CodexModel getCodex(String socket, Oauth2 oauth2, HashMap<String, String> headerField, JSONObject jsonObject, HashMap<String, Object> args) {
+    public CodexModel getCodex(String socket, Oauth2 oauth2, Header header, JSONObject jsonObject, Map args) {
         return new CodexModel();
     }
 }

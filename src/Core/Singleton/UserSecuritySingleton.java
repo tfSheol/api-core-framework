@@ -31,7 +31,7 @@ public class UserSecuritySingleton {
         MessageDigest md;
         try {
             md = MessageDigest.getInstance("SHA-1");
-            md.update(text.concat(ConfigSingleton.getInstance().getSalt()).getBytes("UTF-8"), 0, text.length());
+            md.update(text.concat(ConfigSingleton.getInstance().getSalt()).getBytes(ConfigSingleton.getInstance().getCharset()), 0, text.length());
             return toHex(md.digest());
         } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -92,7 +92,7 @@ public class UserSecuritySingleton {
                 user.replace("socket", socket);
                 user.replace("online", 1);
                 user.replace("token", Oauth2.generateToken());
-                user.replace("expires_in", System.currentTimeMillis());
+                user.replace("expires_in", System.currentTimeMillis() + (ConfigSingleton.getInstance().getTokenExpires() * 1000));
                 return true;
             }
         }
@@ -113,7 +113,7 @@ public class UserSecuritySingleton {
     public void autoRevokeToken() {
         for (HashMap<String, Object> user : users) {
             if (user.get("token") != "") {
-                if (((long) user.get("expires_in") + (ConfigSingleton.getInstance().getTokenExpires() * 1000)) < System.currentTimeMillis()) {
+                if ((long) user.get("expires_in") < System.currentTimeMillis()) {
                     ServerSingleton.getInstance().log("[SYSTEM] -> User: " + user.get("username") + " token's revoked");
                     user.replace("token", "");
                     user.replace("expires_in", 0);

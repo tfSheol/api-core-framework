@@ -1,10 +1,13 @@
 package Core;
 
+import Core.Database.SQLite;
 import Core.Http.Code;
 import Core.Singleton.ServerSingleton;
+import org.reflections.Reflections;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Set;
 
 /**
  * Created by teddy on 21/05/2016.
@@ -17,15 +20,19 @@ public class Model {
     private String errorMsg;
     private long timestamp = System.currentTimeMillis();
     protected ArrayList<Object> data = new ArrayList<>();
+    protected ArrayList<Object> make = new ArrayList<>();
 
     public Model() {
-        /*Class<Plugin.Path> obj = Plugin.Path.class;
-        for (Method method : obj.getDeclaredMethods()) {
-            if (method.getName().equals(new Exception().getStackTrace()[2].getMethodName())) {
-                this.path = method.getAnnotation(Route.class).value();
-                this.method = method.getAnnotation(Methode.class).value();
+        Reflections reflections = new Reflections("Plugin.*");
+        Set<Class<?>> annotated = reflections.getTypesAnnotatedWith(Controller.class);
+        for (Class<?> obj : annotated) {
+            for (Method method : obj.getDeclaredMethods()) {
+                if (method.getName().equals(new Exception().getStackTrace()[2].getMethodName())) {
+                    this.path = method.getAnnotation(Route.class).value();
+                    this.method = method.getAnnotation(Methode.class).value();
+                }
             }
-        }*/
+        }
     }
 
     public ArrayList<Object> getData() {
@@ -72,19 +79,10 @@ public class Model {
                 code == Code.NO_CONTENT ||
                 code == Code.NOT_FOUND ||
                 code == Code.UNAUTHORIZED) {
-            data.clear();
-            data = null;
         }
         error = capitalizeAllWords(getCodeName(code));
         this.code = code;
         ServerSingleton.getInstance().setHttpCode(socket, code);
-    }
-
-    public void setNoReturnValue(String socket) {
-        error = capitalizeAllWords(getCodeName(Code.OK));
-        code = Code.OK;
-        data = null;
-        ServerSingleton.getInstance().setHttpCode(socket, Code.OK);
     }
 
     public static String capitalizeAllWords(String str) {
@@ -106,5 +104,24 @@ public class Model {
             }
         }
         return "OK";
+    }
+
+    protected void setGet(String request) {
+
+    }
+
+    protected void setPost(String socket, String request) {
+        SQLite sqLite = new SQLite(request);
+        sqLite.insert();
+    }
+
+    protected void setPut(String socket, String request) {
+        SQLite sqLite = new SQLite(request);
+        sqLite.update();
+    }
+
+    protected void setDelete(String socket, String request) {
+        SQLite sqLite = new SQLite(request);
+        sqLite.delete();
     }
 }

@@ -1,5 +1,6 @@
 package Core.Database;
 
+import Core.Singleton.ConfigSingleton;
 import Core.Singleton.ServerSingleton;
 
 import java.io.UnsupportedEncodingException;
@@ -20,7 +21,7 @@ public class SQL {
         for (int i = 0; i < values.length; i++) {
             if (values[i].getClass().getTypeName().equals("java.lang.String")) {
                 try {
-                    values[i] = "\"" + URLEncoder.encode(values[i].toString(), "UTF-8") + "\"";
+                    values[i] = "\"" + URLEncoder.encode(values[i].toString(), ConfigSingleton.getInstance().getCharset()) + "\"";
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }

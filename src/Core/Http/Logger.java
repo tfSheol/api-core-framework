@@ -18,7 +18,7 @@ public class Logger extends Thread {
     private ArrayList<HashMap<String, String>> log = new ArrayList<>();
     private String currentDay = currentDayFormat.format(System.currentTimeMillis());
     private static String LOCAL = "LOCAL";
-    private static String ERROR = "[ERROR]";
+    private static String ERROR = "ERROR";
     PrintWriter pw;
 
     public Logger() {

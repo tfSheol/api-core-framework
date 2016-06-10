@@ -7,8 +7,8 @@ Des examples sont d'utilisation et de connexion sont présents dans le dossier `
 * [-] Attribution des routes par annotations
 * [-] Optimisation de la sécurité
 * [-] Gestion des perms selon le groupe et la route
-* [-] Restriction de l'api au application JSON seulement
-* [-] Autorisation des méthodes GET, POST, PUT & DELETE
+* [-] Restriction de l'api au application JSON seulement (Content-Type: application/json)
+* [-] Autorisation des méthodes OPTION, GET, POST, PUT & DELETE
 * [-] Fichier de config
 * [-] Perms chargés depuis un fichier
 * [-] Revoke auto d'un token
@@ -21,3 +21,5 @@ Des examples sont d'utilisation et de connexion sont présents dans le dossier `
 * [-] Route pour revoke un token
 * [-] Parsing des params GET
 * [-] System de banissement
+* [-] System de Task (tâches automatiques)
+* [-] Corrections pour AngularJS

@@ -61,6 +61,10 @@ public class ConfigSingleton {
         return props.getProperty("max_attempt");
     }
 
+    public String getCharset() {
+        return props.getProperty("charset");
+    }
+
     public void setProps(String key, String value, String store) {
         try {
             props.setProperty(key, value);

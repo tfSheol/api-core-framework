@@ -1,6 +1,8 @@
 package Plugin.Server;
 
 import Core.Controller;
+import Core.Http.Header;
+import Core.Http.Map;
 import Core.Http.Oauth2;
 import Core.Methode;
 import Core.Route;
@@ -18,19 +20,19 @@ import java.util.HashMap;
 public class ServerController {
     @Methode("GET")
     @Route("/server")
-    public ServerModel getServer(String socket, Oauth2 oauth2, HashMap<String, String> headerField, JSONObject jsonObject, HashMap<String, Object> args) {
+    public ServerModel getServer(String socket, Oauth2 oauth2, Header header, JSONObject jsonObject, Map args) {
         return new ServerModel();
     }
 
     @Methode("POST")
     @Route("/server/mail")
-    public EmailModel postServerMail(String socket, Oauth2 oauth2, HashMap<String, String> headerField, JSONObject jsonObject, HashMap<String, Object> args) {
+    public EmailModel postServerMail(String socket, Oauth2 oauth2, Header header, JSONObject jsonObject, Map args) {
         return new EmailModel().send(socket, "[TEST] blabla", "fdjhsqdkjfhqs");
     }
 
     @Methode("POST")
     @Route("/server/sms")
-    public OvhSMSModel postServerSMS(String socket, Oauth2 oauth2, HashMap<String, String> headerField, JSONObject jsonObject, HashMap<String, Object> args) {
+    public OvhSMSModel postServerSMS(String socket, Oauth2 oauth2, Header header, JSONObject jsonObject, Map args) {
         return new OvhSMSModel().sendSms();
     }
 }

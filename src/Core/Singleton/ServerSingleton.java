@@ -1,11 +1,15 @@
 package Core.Singleton;
 
+import Core.Controller;
 import Core.Http.Code;
 import Core.Http.Logger;
 import Core.Http.LoggerService;
+import Core.Task;
+import org.reflections.Reflections;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 
 /**
  * Created by teddy on 05/05/2016.
@@ -14,10 +18,17 @@ public class ServerSingleton {
     private ArrayList<HashMap<String, Object>> httpRequest = new ArrayList<>();
     private String hostIp;
     private Logger logger = new Logger();
+    private Set<Class<?>> annotated;
+    private Set<Class<?>> tasks;
+    private int nbTasks = 0;
 
     private ServerSingleton() {
         logger.start();
         new LoggerService().start();
+        Reflections reflections = new Reflections("Plugin.*");
+        annotated = reflections.getTypesAnnotatedWith(Controller.class);
+        tasks = reflections.getTypesAnnotatedWith(Task.class);
+        taskRunner();
     }
 
     private static class SingletonHolder {
@@ -26,6 +37,25 @@ public class ServerSingleton {
 
     public static ServerSingleton getInstance() {
         return SingletonHolder.instance;
+    }
+
+    private void taskRunner() {
+        for (Class<?> task : tasks) {
+            try {
+                if (task.getGenericSuperclass().getTypeName().equals("Core.Http.Job")) {
+                    Thread thread = (Thread) task.newInstance();
+                    thread.start();
+                    nbTasks++;
+                }
+            } catch (InstantiationException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+        log("[SYSTEM] -> Nb tasks loaded: " + nbTasks);
+    }
+
+    public Set<Class<?>> getAnnotated() {
+        return annotated;
     }
 
     public void setHostIp(String hostIp) {
