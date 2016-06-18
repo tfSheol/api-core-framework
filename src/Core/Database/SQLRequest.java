@@ -14,12 +14,12 @@ import java.util.HashMap;
 /**
  * Created by teddy on 03/04/2016.
  */
-public class SQLite {
-    public static String database = "sheol.fr";
+public class SQLRequest {
     private ArrayList<HashMap<String, Object>> entities = new ArrayList<>();
     private String request;
+    JDBCLib sql = new MyJDBC().load();
 
-    public SQLite(String request) {
+    public SQLRequest(String request) {
         this.request = request;
     }
 
@@ -29,7 +29,6 @@ public class SQLite {
 
     public void select() {
         ResultSet result;
-        SQLiteJDBC sql = new SQLiteJDBC(database);
         try {
             result = sql.selectDB(request);
             ResultSetMetaData metaData = result.getMetaData();
@@ -55,17 +54,14 @@ public class SQLite {
     }
 
     public void insert() {
-        SQLiteJDBC sql = new SQLiteJDBC(database);
         sql.insertDB(request);
     }
 
     public void update() {
-        SQLiteJDBC sql = new SQLiteJDBC(database);
         sql.updateDB(request);
     }
 
     public void delete() {
-        SQLiteJDBC sql = new SQLiteJDBC(database);
         sql.deleteDB(request);
     }
 }

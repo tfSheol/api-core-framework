@@ -36,34 +36,39 @@ public class ClientHandler implements Runnable {
         DataOutputStream userOutput;
         String clientId = clientSock.getRemoteSocketAddress().toString();
         try {
-            userInput = new BufferedReader(new InputStreamReader(clientSock.getInputStream()));
+            userInput = new BufferedReader(new InputStreamReader(clientSock.getInputStream(), ConfigSingleton.getInstance().getCharset()));
             userOutput = new DataOutputStream(clientSock.getOutputStream());
-            setInitialData(userInput.readLine());
-            if (!checkInitialData()) {
-                String buffer;
-                if (!method.equals("OPTIONS")) {
-                    while ((buffer = userInput.readLine()).length() > 2) {
-                        headerField.put(buffer.split(": ")[0], buffer.split(": ")[1]);
-                    }
-                    if (headerField.containsKey("Content-Type") && headerField.getString("Content-Type").equals("application/json")) {
-                        if (headerField.containsKey("Content-Length")) {
-                            while ((jsonClient.length() != headerField.getInt("Content-Length"))) {
-                                jsonClient = jsonClient + (char) userInput.read();
+            if (!setInitialData(clientId, userInput.readLine())) {
+                if (!checkInitialData()) {
+                    String buffer;
+                    if (!method.equals("OPTIONS")) {
+                        while ((buffer = userInput.readLine()).length() > 2) {
+                            ServerSingleton.getInstance().log(clientId, "[HEADER] -> " + buffer);
+                            headerField.put(buffer.split(": ")[0], buffer.split(": ")[1]);
+                        }
+                        if ((headerField.containsKey("Accept") && headerField.getString("Accept").equals("application/json")) || (headerField.containsKey("Content-Type") && headerField.getString("Content-Type").equals("application/json"))) {
+                            if (headerField.containsKey("Content-Length") && headerField.getInt("Content-Length") > 0) {
+                                byte[] array = new byte[0];
+                                while ((array.length != headerField.getInt("Content-Length"))) {
+                                    jsonClient = jsonClient + (char) userInput.read();
+                                    array = jsonClient.getBytes();
+                                }
                             }
+                            Router router = new Router();
+                            ServerSingleton.getInstance().log(clientId, "[USER] -> " + method + " " + route);
+                            JSONObject jsonObject = new JSONObject();
+                            if (Router.isJSONValid(jsonClient)) {
+                                jsonObject = new JSONObject(jsonClient);
+                            }
+                            String jsonReturn = router.find(clientId, method, route, headerField, jsonObject);
+                            userOutput.write(makeResult(clientId, jsonReturn).getBytes(ConfigSingleton.getInstance().getCharset()));
+                            userOutput.flush();
                         }
-                        Router router = new Router();
+                    } else {
                         ServerSingleton.getInstance().log(clientId, "[USER] -> " + method + " " + route);
-                        JSONObject jsonObject = new JSONObject();
-                        if (Router.isJSONValid(jsonClient)) {
-                            jsonObject = new JSONObject(jsonClient);
-                        }
-                        String jsonReturn = router.find(clientId, method, route, headerField, jsonObject);
-                        userOutput.write(makeResult(clientId, jsonReturn).getBytes(ConfigSingleton.getInstance().getCharset()));
+                        userOutput.write(makeOptionsResult().getBytes(ConfigSingleton.getInstance().getCharset()));
                         userOutput.flush();
                     }
-                } else {
-                    userOutput.write(makeOptionsResult().getBytes(ConfigSingleton.getInstance().getCharset()));
-                    userOutput.flush();
                 }
             }
             userInput.close();
@@ -78,13 +83,19 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    private void setInitialData(String data) {
+    private boolean setInitialData(String clientId, String data) {
         if (data != null) {
+            ServerSingleton.getInstance().log(clientId, "[REQUEST] -> " + data);
             String[] tmp = data.split(" ");
-            method = tmp[0];
-            route = tmp[1];
-            protocolVersion = tmp[2];
+            if (tmp.length == 3) {
+                method = tmp[0];
+                route = tmp[1];
+                protocolVersion = tmp[2];
+            }
+        } else {
+            return true;
         }
+        return false;
     }
 
     private boolean checkInitialData() {

@@ -16,13 +16,6 @@ public class UserSecuritySingleton {
     private ArrayList<HashMap<String, Object>> users = new ArrayList<>();
     private int nbUsers = 0;
 
-    private UserSecuritySingleton() {
-        addUser(1, "Sheol", hashSHA1("test"), PermsSingleton.MEMBER);
-        addUser(2, "Admin", hashSHA1("admin"), PermsSingleton.ADMIN);
-        addUser(3, "Modo", hashSHA1("modo"), PermsSingleton.MODO);
-        ServerSingleton.getInstance().log("[SYSTEM] -> Nb users loaded: " + nbUsers);
-    }
-
     public static UserSecuritySingleton getInstance() {
         return instance;
     }
@@ -53,6 +46,10 @@ public class UserSecuritySingleton {
             } while (two_halfs++ < 1);
         }
         return buf.toString();
+    }
+
+    public int getNbUsers() {
+        return nbUsers;
     }
 
     public void addUser(int id, String username, String password, int group) {
@@ -104,6 +101,7 @@ public class UserSecuritySingleton {
             if (user.get("token").equals(token)) {
                 user.replace("socket", socket);
                 user.replace("online", 1);
+                user.replace("expires_in", System.currentTimeMillis() + (ConfigSingleton.getInstance().getTokenExpires() * 1000));
                 return true;
             }
         }

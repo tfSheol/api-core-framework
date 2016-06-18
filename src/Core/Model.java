@@ -1,6 +1,6 @@
 package Core;
 
-import Core.Database.SQLite;
+import Core.Database.SQLRequest;
 import Core.Http.Code;
 import Core.Singleton.ServerSingleton;
 import org.reflections.Reflections;
@@ -17,7 +17,7 @@ public class Model {
     private String method;
     private int code = Code.OK;
     private String error = "OK";
-    private String errorMsg;
+    private String error_msg;
     private long timestamp = System.currentTimeMillis();
     protected ArrayList<Object> data = new ArrayList<>();
     protected ArrayList<Object> make = new ArrayList<>();
@@ -59,6 +59,10 @@ public class Model {
         return method;
     }
 
+    public String getErrorMsg() {
+        return error_msg;
+    }
+
     public void setError(String error) {
         this.error = error;
     }
@@ -69,6 +73,10 @@ public class Model {
 
     public void setMethod(String method) {
         this.method = method;
+    }
+
+    public void setErrorMsg(String errorMsg) {
+        this.error_msg = errorMsg;
     }
 
     public void setCode(String socket, int code) {
@@ -111,17 +119,17 @@ public class Model {
     }
 
     protected void setPost(String socket, String request) {
-        SQLite sqLite = new SQLite(request);
+        SQLRequest sqLite = new SQLRequest(request);
         sqLite.insert();
     }
 
     protected void setPut(String socket, String request) {
-        SQLite sqLite = new SQLite(request);
+        SQLRequest sqLite = new SQLRequest(request);
         sqLite.update();
     }
 
     protected void setDelete(String socket, String request) {
-        SQLite sqLite = new SQLite(request);
+        SQLRequest sqLite = new SQLRequest(request);
         sqLite.delete();
     }
 }

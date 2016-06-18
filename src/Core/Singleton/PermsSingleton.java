@@ -42,6 +42,10 @@ public class PermsSingleton {
         return instance;
     }
 
+    public ArrayList<HashMap<String, Object>> getPerms() {
+        return perms;
+    }
+
     public void addRoute(String method, String route, int minusGroup) {
         ServerSingleton.getInstance().log("[PERM] -> method: " + method + " - route: " + route + " - minimum power: " + minusGroup);
         HashMap<String, Object> perm = new HashMap<>();

@@ -1,5 +1,6 @@
+package Core;
+
 import Core.Singleton.ConfigSingleton;
-import Core.Singleton.ServerSingleton;
 import Core.Socket.ThreadPool;
 
 /**
@@ -14,16 +15,16 @@ public class Main {
             System.exit(1);
         }
         if (port <= 0 || port > 65536) {
-            ServerSingleton.getInstance().log("[SERVER] -> Port value must be in (0, 65535].", true);
+            System.err.println("[SERVER] -> Port value must be in (0, 65535].");
             System.exit(1);
         }
         final ThreadPool server = new ThreadPool(port);
         server.start();
         try {
             server.join();
-            ServerSingleton.getInstance().log("[SERVER] -> Completed shutdown.");
+            System.out.println("[SERVER] -> Completed shutdown.");
         } catch (InterruptedException e) {
-            ServerSingleton.getInstance().log("[SERVER] -> Interrupted before accept thread completed.", true);
+            System.err.println("[SERVER] -> Interrupted before accept thread completed.");
             System.exit(1);
         }
     }

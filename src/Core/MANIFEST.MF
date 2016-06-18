@@ -1,5 +1,4 @@
 Manifest-Version: 1.0
-Main-Class: Main
+Main-Class: Core.Main
 Class-Path: /lib
 Created-By: Teddy Fontaine (Sheol)
-Build-Jdk: ${java.version}

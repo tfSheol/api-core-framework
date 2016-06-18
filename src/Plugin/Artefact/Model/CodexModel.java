@@ -1,6 +1,6 @@
 package Plugin.Artefact.Model;
 
-import Core.Database.SQLite;
+import Core.Database.SQLRequest;
 import Core.Model;
 import Plugin.Artefact.Obj.ArtefactObj;
 
@@ -40,7 +40,7 @@ public class CodexModel extends Model {
             "AND titles.id=collections.title_id";
 
     public CodexModel() {
-        SQLite sql = new SQLite(ARTEFACTS);
+        SQLRequest sql = new SQLRequest(ARTEFACTS);
         sql.select();
         for (int i = 0; i < sql.getResultSet().size(); i++) {
             ArtefactObj artefactObj = new ArtefactObj();

@@ -37,9 +37,6 @@
             <version>1.5.2</version>
         </dependency>
     </dependencies>
-    <properties>
-        <java.version>1.8</java.version>
-    </properties>
     <build>
         <sourceDirectory>src</sourceDirectory>
         <plugins>
@@ -57,7 +54,7 @@
                                 <descriptorRef>jar-with-dependencies</descriptorRef>
                             </descriptorRefs>
                             <archive>
-                                <manifestFile>src/Resource/META-INF/MANIFEST.MF</manifestFile>
+                                <manifestFile>src/Core/MANIFEST.MF</manifestFile>
                             </archive>
                         </configuration>
                     </execution>
@@ -68,7 +65,7 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
                     <archive>
-                        <manifestFile>src/Resource/META-INF/MANIFEST.MF</manifestFile>
+                        <manifestFile>src/Core/MANIFEST.MF</manifestFile>
                     </archive>
                 </configuration>
             </plugin>

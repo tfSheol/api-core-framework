@@ -12,45 +12,61 @@ import org.json.JSONObject;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 
 /**
  * Created by teddy on 04/05/2016.
  */
 public class Router {
+    private Error error = new Error();
     private Map args = new Map();
+    private ArrayList<String> genericRoutes = new ArrayList<>();
+    private ArrayList<String> customRoutes = new ArrayList<>();
 
-    public String find(String socket, String method, String route, Header headerField, JSONObject jsonObject) {
+    public String find(String socket, String method, String querryRoute, Header headerField, JSONObject jsonObject) {
+        error.setMethod(method);
+        error.setPath(querryRoute);
         for (Class<?> obj : ServerSingleton.getInstance().getAnnotated()) {
+            String route = getGenericRoute(method, querryRoute, obj);
+            error.setPath(route);
             Oauth2 oauth2 = new Oauth2((headerField.containsKey("Authorization")) ? headerField.getString("Authorization") : null);
             Oauth2Permissions oauth2Permissions = new Oauth2Permissions();
-            if ((!route.equals("/oauth")) || (oauth2.getType() != null && oauth2.getType().equals(Oauth2.BASIC) && route.equals("/oauth"))) {
+            if (route != null && (!route.equals("/oauth") || (oauth2.getType() != null && oauth2.getType().equals(Oauth2.BASIC) && route.equals("/oauth")))) {
                 if (oauth2Permissions.checkPermsRoute(socket, oauth2, method, route, obj, oauth2.getType())) {
                     for (Method methods : obj.getDeclaredMethods()) {
                         if (methods.isAnnotationPresent(Route.class) && methods.isAnnotationPresent(Methode.class)) {
-                            if (parseRouteParameters(methods.getAnnotation(Route.class).value(), route) && methods.getAnnotation(Methode.class).value().equals(method)) {
+                            if (methods.getAnnotation(Route.class).value().equals(route) && methods.getAnnotation(Methode.class).value().equals(method)) {
                                 try {
-                                    ServerSingleton.getInstance().log(socket, "[SERVER] -> " + socket + " execute " + route);
+                                    ServerSingleton.getInstance().log(socket, "[SERVER] -> execute " + route);
                                     Object[] params = {socket, oauth2, headerField, jsonObject, args};
                                     String json = cleanJson(methods.invoke(obj.newInstance(), params)).toString();
                                     ServerSingleton.getInstance().log(socket, "[SERVER] -> " + json);
                                     return json;
-                                } catch (IllegalAccessException | InvocationTargetException | InstantiationException | JSONException e) {
-                                    ServerSingleton.getInstance().log("[SERVER] -> " + socket + " error on route finder : " + e, true);
+                                } catch (IllegalAccessException | InstantiationException e) {
+                                    ServerSingleton.getInstance().log(socket, "[SERVER] -> error on route finder : " + e, true);
+                                } catch (InvocationTargetException e) {
+                                    error.setErrorMsg(e.getTargetException().getMessage());
+                                    ServerSingleton.getInstance().log(socket, "[SERVER] -> " + e.getTargetException().getMessage(), true);
                                 }
                             }
                         }
                     }
                 } else {
                     ServerSingleton.getInstance().setHttpCode(socket, Code.UNAUTHORIZED);
-                    String json = cleanJson(new Error(socket, method, route, Code.UNAUTHORIZED)).toString();
+                    error.setCode(socket, Code.UNAUTHORIZED);
+                    error.setErrorMsg("Full logging required or bad perms level");
+                    String json = cleanJson(error).toString();
                     ServerSingleton.getInstance().log(socket, "[SERVER] -> " + json);
                     return json;
                 }
                 UserSecuritySingleton.getInstance().setUserOffline(socket);
+            } else {
+                error.setErrorMsg("Route not founded");
             }
         }
         ServerSingleton.getInstance().setHttpCode(socket, Code.METHOD_NOT_ALLOWED);
-        String json = cleanJson(new Error(socket, method, route, Code.METHOD_NOT_ALLOWED)).toString();
+        error.setCode(socket, Code.METHOD_NOT_ALLOWED);
+        String json = cleanJson(error).toString();
         ServerSingleton.getInstance().log(socket, "[SERVER] -> " + json);
         IpSingleton.getInstance().setIpFail(socket.split(":")[0].replace("/", ""));
         return json;
@@ -67,20 +83,64 @@ public class Router {
         return json;
     }
 
+    private String getGenericRoute(String method, String route, Class<?> obj) {
+        fullList(method, obj);
+        String ret = getCurrentRoute(genericRoutes, route);
+        if (ret == null) {
+            return getCurrentRoute(customRoutes, route);
+        }
+        return ret;
+    }
+
+    private String getCurrentRoute(ArrayList<String> list, String route) {
+        for (String currentRoute : list) {
+            if (parseRouteParameters(currentRoute, route)) {
+                return currentRoute;
+            }
+        }
+        return null;
+    }
+
+    private void fullList(String method, Class<?> obj) {
+        for (Method methods : obj.getDeclaredMethods()) {
+            if (methods.isAnnotationPresent(Route.class) && methods.isAnnotationPresent(Methode.class) && methods.getAnnotation(Methode.class).value().equals(method)) {
+                if (parseCustomRoute(methods.getAnnotation(Route.class).value())) {
+                    customRoutes.add(methods.getAnnotation(Route.class).value());
+                } else {
+                    genericRoutes.add(methods.getAnnotation(Route.class).value());
+                }
+            }
+        }
+    }
+
+    private boolean parseCustomRoute(String path) {
+        int length = 0;
+        String[] pathArray = path.split("/");
+        for (String aPathArray : pathArray) {
+            if (aPathArray.matches("\\{(.*?)\\}")) {
+                length++;
+            }
+        }
+        return length > 0;
+    }
+
     private boolean parseRouteParameters(String path, String route) {
+        int length = 0;
+        int jok = 0;
         String[] pathArray = path.split("/");
         String[] routeArray = route.split("/");
         if (pathArray.length == routeArray.length) {
             for (int i = 0; i < pathArray.length; i++) {
-                if (!pathArray[i].equals(routeArray[i])) {
-                    if (pathArray[i].matches("\\{(.*?)\\}")) {
-                        args.put(pathArray[i].replace("{", "").replace("}", ""), routeArray[i]);
-                    } else {
-                        return false;
-                    }
+                if (pathArray[i].equals(routeArray[i])) {
+                    length++;
+                } else if (pathArray[i].matches("\\{(.*?)\\}")) {
+                    args.put(pathArray[i].replace("{", "").replace("}", ""), routeArray[i]);
+                    jok++;
                 }
             }
-            return true;
+            if (pathArray.length == length + jok) {
+                return true;
+            }
         }
         return false;
     }
