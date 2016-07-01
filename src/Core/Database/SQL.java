@@ -5,10 +5,7 @@ import Core.Singleton.ServerSingleton;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 /**
  * Created by teddy on 11/04/2016.
@@ -16,6 +13,7 @@ import java.sql.Statement;
 public class SQL {
     protected Connection c = null;
     protected Statement stmt = null;
+    private int generatedId = -1;
 
     public static String make(String subject, Object[] values) {
         for (int i = 0; i < values.length; i++) {
@@ -32,38 +30,46 @@ public class SQL {
 
     public void insertDB(String sql) {
         try {
-            stmt.executeUpdate(sql);
+            PreparedStatement preparedStatement = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.execute();
             c.commit();
+            generatedId = preparedStatement.getGeneratedKeys().getInt(1);
         } catch (SQLException e) {
-            ServerSingleton.getInstance().log("SQLException: " + e.getMessage(), true);
+            e.printStackTrace();
+            ServerSingleton.getInstance().log("SQLException on insert: " + e.getMessage(), true);
         }
     }
 
     public void updateDB(String sql) {
         try {
-            stmt.executeUpdate(sql);
+            PreparedStatement preparedStatement = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.execute();
             c.commit();
+            generatedId = preparedStatement.getGeneratedKeys().getInt(1);
         } catch (SQLException e) {
-            ServerSingleton.getInstance().log("SQLException: " + e.getMessage(), true);
+            ServerSingleton.getInstance().log("SQLException on update: " + e.getMessage(), true);
         }
     }
 
     public void deleteDB(String sql) {
         try {
-            stmt.executeUpdate(sql);
+            PreparedStatement preparedStatement = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.execute();
             c.commit();
+            generatedId = preparedStatement.getGeneratedKeys().getInt(1);
         } catch (SQLException e) {
-            ServerSingleton.getInstance().log("SQLException: " + e.getMessage(), true);
+            ServerSingleton.getInstance().log("SQLException on delete: " + e.getMessage(), true);
         }
     }
 
     public ResultSet selectDB(String sql) {
         try {
-            ResultSet result = stmt.executeQuery(sql);
+            PreparedStatement preparedStatement = c.prepareStatement(sql);
+            ResultSet result = preparedStatement.executeQuery();
             c.commit();
             return result;
         } catch (SQLException e) {
-            ServerSingleton.getInstance().log("SQLException: " + e.getMessage(), true);
+            ServerSingleton.getInstance().log("SQLException on select: " + e.getMessage(), true);
         }
         return null;
     }
@@ -73,7 +79,11 @@ public class SQL {
             stmt.close();
             c.close();
         } catch (SQLException e) {
-            ServerSingleton.getInstance().log("SQLException: " + e.getMessage(), true);
+            ServerSingleton.getInstance().log("SQLException on close: " + e.getMessage(), true);
         }
+    }
+
+    public int getGeneratedId() {
+        return generatedId;
     }
 }

@@ -21,6 +21,7 @@ public class Model {
     private long timestamp = System.currentTimeMillis();
     protected ArrayList<Object> data = new ArrayList<>();
     protected ArrayList<Object> make = new ArrayList<>();
+    protected int id = -1;
 
     public Model() {
         Reflections reflections = new Reflections("Plugin.*");
@@ -121,15 +122,18 @@ public class Model {
     protected void setPost(String socket, String request) {
         SQLRequest sqLite = new SQLRequest(request);
         sqLite.insert();
+        id = sqLite.getGeneratedId();
     }
 
     protected void setPut(String socket, String request) {
         SQLRequest sqLite = new SQLRequest(request);
         sqLite.update();
+        id = sqLite.getGeneratedId();
     }
 
     protected void setDelete(String socket, String request) {
         SQLRequest sqLite = new SQLRequest(request);
         sqLite.delete();
+        id = sqLite.getGeneratedId();
     }
 }

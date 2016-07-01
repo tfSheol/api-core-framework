@@ -29,7 +29,7 @@ public class JDBCLib extends SQL {
     public JDBCLib mySQL() {
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            c = DriverManager.getConnection("jdbc:mysql://" + url + "/?user=" + username + "&password=" + password);
+            c = DriverManager.getConnection("jdbc:mysql://" + url, username, password);
             stmt = c.createStatement();
             c.setAutoCommit(false);
         } catch (ClassNotFoundException | SQLException e) {
@@ -38,28 +38,15 @@ public class JDBCLib extends SQL {
         return this;
     }
 
-    @SQLDriver("PostgreSQL")
+    @SQLDriver("PostgresSQL")
     public JDBCLib postgreSQL() {
         try {
             Class.forName("org.postgresql.Driver");
-            c = DriverManager.getConnection("jdbc:postgresql://" + url + "/?user=" + username + "&password=" + password);
+            c = DriverManager.getConnection("jdbc:postgresql://" + url + "?user=" + username + "&password=" + password);
             stmt = c.createStatement();
             c.setAutoCommit(false);
         } catch (ClassNotFoundException | SQLException e) {
             ServerSingleton.getInstance().log("PostgreSQL : " + e.getMessage(), true);
-        }
-        return this;
-    }
-
-    @SQLDriver("IBMDB2")
-    public JDBCLib IBMDB2() {
-        try {
-            Class.forName("COM.ibm.db2.jdbc.app.DB2Driver");
-            c = DriverManager.getConnection("jdbc:db2://" + url + "/?user=" + username + "&password=" + password);
-            stmt = c.createStatement();
-            c.setAutoCommit(false);
-        } catch (ClassNotFoundException | SQLException e) {
-            ServerSingleton.getInstance().log("IBMDB2 : " + e.getMessage(), true);
         }
         return this;
     }

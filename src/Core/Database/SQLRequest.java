@@ -17,7 +17,8 @@ import java.util.HashMap;
 public class SQLRequest {
     private ArrayList<HashMap<String, Object>> entities = new ArrayList<>();
     private String request;
-    JDBCLib sql = new MyJDBC().load();
+    private JDBCLib sql = new MyJDBC().load();
+    private int generatedId = -1;
 
     public SQLRequest(String request) {
         this.request = request;
@@ -37,12 +38,12 @@ public class SQLRequest {
                 for (int i = 1; i <= metaData.getColumnCount(); i++) {
                     if (result.getObject(i).getClass().getTypeName().equals("java.lang.String")) {
                         try {
-                            data.put(metaData.getColumnName(i), URLDecoder.decode(result.getObject(i).toString(), ConfigSingleton.getInstance().getCharset()));
+                            data.put(metaData.getColumnLabel(i), URLDecoder.decode(result.getObject(i).toString(), ConfigSingleton.getInstance().getCharset()));
                         } catch (UnsupportedEncodingException e) {
                             ServerSingleton.getInstance().log("URLDecode : " + e, true);
                         }
                     } else {
-                        data.put(metaData.getColumnName(i), result.getObject(i));
+                        data.put(metaData.getColumnLabel(i), result.getObject(i));
                     }
                 }
                 entities.add(data);
@@ -55,13 +56,20 @@ public class SQLRequest {
 
     public void insert() {
         sql.insertDB(request);
+        generatedId = sql.getGeneratedId();
     }
 
     public void update() {
         sql.updateDB(request);
+        generatedId = sql.getGeneratedId();
     }
 
     public void delete() {
         sql.deleteDB(request);
+        generatedId = sql.getGeneratedId();
+    }
+
+    public int getGeneratedId() {
+        return generatedId;
     }
 }

@@ -39,7 +39,7 @@ public class Router {
                                 try {
                                     ServerSingleton.getInstance().log(socket, "[SERVER] -> execute " + route);
                                     Object[] params = {socket, oauth2, headerField, jsonObject, args};
-                                    String json = cleanJson(methods.invoke(obj.newInstance(), params)).toString();
+                                    String json = cleanJson(socket, method, methods.invoke(obj.newInstance(), params)).toString();
                                     ServerSingleton.getInstance().log(socket, "[SERVER] -> " + json);
                                     return json;
                                 } catch (IllegalAccessException | InstantiationException e) {
@@ -55,7 +55,7 @@ public class Router {
                     ServerSingleton.getInstance().setHttpCode(socket, Code.UNAUTHORIZED);
                     error.setCode(socket, Code.UNAUTHORIZED);
                     error.setErrorMsg("Full logging required or bad perms level");
-                    String json = cleanJson(error).toString();
+                    String json = cleanJson(socket, method, error).toString();
                     ServerSingleton.getInstance().log(socket, "[SERVER] -> " + json);
                     return json;
                 }
@@ -66,19 +66,28 @@ public class Router {
         }
         ServerSingleton.getInstance().setHttpCode(socket, Code.METHOD_NOT_ALLOWED);
         error.setCode(socket, Code.METHOD_NOT_ALLOWED);
-        String json = cleanJson(error).toString();
+        String json = cleanJson(socket, method, error).toString();
         ServerSingleton.getInstance().log(socket, "[SERVER] -> " + json);
         IpSingleton.getInstance().setIpFail(socket.split(":")[0].replace("/", ""));
         return json;
     }
 
-    private JSONObject cleanJson(Object obj) {
+    private JSONObject cleanJson(String socket, String method, Object obj) {
         JSONObject json = new JSONObject(new Gson().toJson(obj));
         if (!json.isNull("make")) {
             json.remove("make");
         }
+        if (!json.isNull("id") && (json.get("id").equals(-1) || method.equals("GET"))) {
+            json.remove("id");
+        }
         if (!json.isNull("data") && json.getJSONArray("data").length() == 0) {
             json.remove("data");
+            if (method.equals("GET") && json.get("code").equals(Code.OK)) {
+                ServerSingleton.getInstance().setHttpCode(socket, Code.NOT_FOUND);
+                json = json.put("code", Code.NOT_FOUND);
+                json = json.put("error", "NOT FOUND");
+                json = json.put("error_msg", "Data not founded");
+            }
         }
         return json;
     }
