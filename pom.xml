@@ -42,30 +42,49 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.5.1</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
+            <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                    <archive>
+                        <manifest>
+                            <mainClass>Core.Main</mainClass>
+                            <addClasspath>true</addClasspath>
+                        </manifest>
+                        <addMavenDescriptor>false</addMavenDescriptor>
+                    </archive>
+                </configuration>
                 <executions>
                     <execution>
+                        <id>make-assembly</id>
+                        <phase>compile</phase>
                         <goals>
-                            <goal>attached</goal>
+                            <goal>single</goal>
                         </goals>
-                        <phase>package</phase>
-                        <configuration>
-                            <descriptorRefs>
-                                <descriptorRef>jar-with-dependencies</descriptorRef>
-                            </descriptorRefs>
-                            <archive>
-                                <manifestFile>src/Core/MANIFEST.MF</manifestFile>
-                            </archive>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+                <version>3.0.2</version>
                 <configuration>
                     <archive>
-                        <manifestFile>src/Core/MANIFEST.MF</manifestFile>
+                        <manifest>
+                            <mainClass>Core.Main</mainClass>
+                            <addClasspath>true</addClasspath>
+                        </manifest>
+                        <addMavenDescriptor>false</addMavenDescriptor>
                     </archive>
                 </configuration>
             </plugin>
@@ -74,38 +93,41 @@
                 <version>1.1</version>
                 <executions>
                     <execution>
-                        <phase>test</phase>
+                        <phase>package</phase>
                         <goals>
                             <goal>run</goal>
                         </goals>
                         <configuration>
                             <tasks>
                                 <echo>Add Config file</echo>
-                                <copy file="./config.properties" tofile="${basedir}/target/config.properties"/>
+                                <copy file="./config.properties" tofile="${project.build.directory}/config.properties"/>
                                 <echo>Add Routes file</echo>
-                                <copy file="./route.properties" tofile="${basedir}/target/route.properties"/>
+                                <copy file="./route.properties" tofile="${project.build.directory}/route.properties"/>
                                 <echo>Add Ip file</echo>
-                                <copy file="./ip.properties" tofile="${basedir}/target/ip.properties"/>
+                                <copy file="./ip.properties" tofile="${project.build.directory}/ip.properties"/>
                                 <echo>Add Database</echo>
-                                <copy file="./db/data.db" tofile="${basedir}/target/db/data.db"/>
+                                <copy file="./db/data.db" tofile="${project.build.directory}/db/data.db"/>
                                 <echo>Add Launcher script</echo>
-                                <copy file="./scripts/launcher.bat" tofile="${basedir}/target/launcher.bat"/>
-                                <copy file="./scripts/launcher.sh" tofile="${basedir}/target/launcher.sh"/>
+                                <copy file="./scripts/launcher.bat" tofile="${project.build.directory}/launcher.bat"/>
+                                <copy file="./scripts/launcher.sh" tofile="${project.build.directory}/launcher.sh"/>
                                 <echo>Add codes examples</echo>
                                 <copy file="./Examples/AngularJS/oauth.html"
-                                      tofile="${basedir}/target/Examples/AngularJS/oauth.html"/>
+                                      tofile="${project.build.directory}/Examples/AngularJS/oauth.html"/>
+                                <echo>Clean target folder</echo>
+                                <delete dir="${project.build.directory}/classes" includeemptydirs="true"/>
+                                <delete dir="${project.build.directory}/surefire" includeemptydirs="true"/>
+                                <delete dir="${project.build.directory}/maven-status" includeemptydirs="true"/>
+                                <delete dir="${project.build.directory}/archive-tmp" includeemptydirs="true"/>
+                                <delete dir="${project.build.directory}/generated-sources" includeemptydirs="true"/>
+                                <delete file="${project.build.directory}/${artifactId}-${version}.jar"/>
+                                <echo>Rename execute file</echo>
+                                <copy file="${project.build.directory}/${artifactId}-${version}-jar-with-dependencies.jar"
+                                      tofile="${project.build.directory}/${artifactId}.jar"/>
+                                <delete file="${project.build.directory}/${artifactId}-${version}-jar-with-dependencies.jar"/>
                             </tasks>
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
-                </configuration>
             </plugin>
         </plugins>
     </build>

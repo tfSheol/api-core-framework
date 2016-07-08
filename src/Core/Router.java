@@ -86,7 +86,7 @@ public class Router {
                 ServerSingleton.getInstance().setHttpCode(socket, Code.NOT_FOUND);
                 json = json.put("code", Code.NOT_FOUND);
                 json = json.put("error", "NOT FOUND");
-                json = json.put("error_msg", "Data not founded");
+                json = json.put("error_msg", "Data not found");
             }
         }
         return json;

@@ -45,6 +45,10 @@ public class ConfigSingleton {
         return String.valueOf(props.getProperty("name"));
     }
 
+    public String getAuthor() {
+        return String.valueOf(props.getProperty("author"));
+    }
+
     public String getVersion() {
         return String.valueOf(props.getProperty("version"));
     }

@@ -165,6 +165,15 @@ public class UserSecuritySingleton {
         return -1;
     }
 
+    public int getIdByToken(String token) {
+        for (HashMap<String, Object> user : users) {
+            if (user.get("token").equals(token)) {
+                return (int) user.get("id");
+            }
+        }
+        return -1;
+    }
+
     public void revokUserToken(String socket) {
         for (HashMap<String, Object> user : users) {
             if (user.get("socket").equals(socket)) {

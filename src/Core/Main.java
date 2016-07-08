@@ -9,6 +9,11 @@ import Core.Socket.ThreadPool;
 public class Main {
     public static void main(String[] args) {
         int port = -1;
+        System.out.println("***********************************************************");
+        System.out.println("** " + ConfigSingleton.getInstance().getName());
+        System.out.println("** Version " + ConfigSingleton.getInstance().getVersion());
+        System.out.println("** By " + ConfigSingleton.getInstance().getAuthor());
+        System.out.println("***********************************************************");
         try {
             port = ConfigSingleton.getInstance().getPort();
         } catch (NumberFormatException nfe) {

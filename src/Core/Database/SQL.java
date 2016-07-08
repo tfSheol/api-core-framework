@@ -33,7 +33,9 @@ public class SQL {
             PreparedStatement preparedStatement = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             preparedStatement.execute();
             c.commit();
-            generatedId = preparedStatement.getGeneratedKeys().getInt(1);
+            ResultSet rs = preparedStatement.getGeneratedKeys();
+            rs.next();
+            generatedId = rs.getInt(1);
         } catch (SQLException e) {
             e.printStackTrace();
             ServerSingleton.getInstance().log("SQLException on insert: " + e.getMessage(), true);
@@ -45,7 +47,9 @@ public class SQL {
             PreparedStatement preparedStatement = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             preparedStatement.execute();
             c.commit();
-            generatedId = preparedStatement.getGeneratedKeys().getInt(1);
+            ResultSet rs = preparedStatement.getGeneratedKeys();
+            rs.next();
+            generatedId = rs.getInt(1);
         } catch (SQLException e) {
             ServerSingleton.getInstance().log("SQLException on update: " + e.getMessage(), true);
         }
@@ -56,7 +60,9 @@ public class SQL {
             PreparedStatement preparedStatement = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             preparedStatement.execute();
             c.commit();
-            generatedId = preparedStatement.getGeneratedKeys().getInt(1);
+            ResultSet rs = preparedStatement.getGeneratedKeys();
+            rs.next();
+            generatedId = rs.getInt(1);
         } catch (SQLException e) {
             ServerSingleton.getInstance().log("SQLException on delete: " + e.getMessage(), true);
         }
