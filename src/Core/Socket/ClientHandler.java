@@ -111,7 +111,7 @@ public class ClientHandler implements Runnable {
                 "Date: " + currentDate + "\r\n" +
                 "Server: " + ConfigSingleton.getInstance().getName() + "/" + ConfigSingleton.getInstance().getVersion() + "\r\n" +
                 "Content-Type: application/json\r\n" +
-                "Access-Control-Allow-Origin: " + ConfigSingleton.getInstance().getPropertie("Access-Control-Allow-Origin") + "\r\n" +
+                "Access-Control-Allow-Origin: " + ConfigSingleton.getInstance().getString("Access-Control-Allow-Origin") + "\r\n" +
                 "Access-Control-Allow-Credentials: true\r\n" +
                 "Access-Control-Allow-Headers: origin, content-type, accept, Authorization\r\n" +
                 "Access-Control-Allow-Methods: OPTIONS, GET, PUT, POST, DELETE\r\n" +
@@ -123,7 +123,7 @@ public class ClientHandler implements Runnable {
 
     private String makeOptionsResult() {
         return "HTTP/1.1 200 OK\r\n" +
-                "Access-Control-Allow-Origin: " + ConfigSingleton.getInstance().getPropertie("Access-Control-Allow-Origin") + "\r\n" +
+                "Access-Control-Allow-Origin: " + ConfigSingleton.getInstance().getString("Access-Control-Allow-Origin") + "\r\n" +
                 "Access-Control-Allow-Credentials: true\r\n" +
                 "Access-Control-Allow-Headers: origin, content-type, accept, Authorization\r\n" +
                 "Access-Control-Allow-Methods: OPTIONS, GET, PUT, POST, DELETE\r\n"

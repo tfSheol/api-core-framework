@@ -1,5 +1,6 @@
 package Core.Singleton;
 
+import Core.Http.Map;
 import Core.Http.Oauth2;
 
 import java.io.UnsupportedEncodingException;
@@ -13,17 +14,25 @@ import java.util.HashMap;
  */
 public class UserSecuritySingleton {
     private static UserSecuritySingleton instance = new UserSecuritySingleton();
-    private ArrayList<HashMap<String, Object>> users = new ArrayList<>();
+    private ArrayList<Map> users = new ArrayList<>();
     private int nbUsers = 0;
 
     public static UserSecuritySingleton getInstance() {
         return instance;
     }
 
+    public static String hashMD5(String text) {
+        return hash(text, "MD5");
+    }
+
     public static String hashSHA1(String text) {
+        return hash(text, "SHA-1");
+    }
+
+    public static String hash(String text, String hash) {
         MessageDigest md;
         try {
-            md = MessageDigest.getInstance("SHA-1");
+            md = MessageDigest.getInstance(hash);
             md.update(text.concat(ConfigSingleton.getInstance().getSalt()).getBytes(ConfigSingleton.getInstance().getCharset()), 0, text.length());
             return toHex(md.digest());
         } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
@@ -33,7 +42,7 @@ public class UserSecuritySingleton {
     }
 
     private static String toHex(byte[] data) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         for (int i = 0; i < data.length; i++) {
             int halfbyte = (data[i] >>> 4) & 0x0F;
             int two_halfs = 0;
@@ -53,7 +62,7 @@ public class UserSecuritySingleton {
     }
 
     public void addUser(int id, String username, String password, int group) {
-        HashMap<String, Object> user = new HashMap<>();
+        Map user = new Map();
         user.put("username", username);
         user.put("password", password);
         user.put("id", id);
@@ -67,7 +76,7 @@ public class UserSecuritySingleton {
     }
 
     public void updateUser(String socket, String key, Object value) {
-        for (HashMap<String, Object> user : users) {
+        for (Map user : users) {
             if (user.get("socket").equals(socket)) {
                 user.replace(key, value);
             }
@@ -75,7 +84,7 @@ public class UserSecuritySingleton {
     }
 
     public void updateFullUser(String socket, String username, String password) {
-        for (HashMap<String, Object> user : users) {
+        for (Map user : users) {
             if (user.get("socket").equals(socket)) {
                 user.replace("username", username);
                 user.replace("password", password);
@@ -84,7 +93,7 @@ public class UserSecuritySingleton {
     }
 
     public boolean checkUser(String socket, String username, String password) {
-        for (HashMap<String, Object> user : users) {
+        for (Map user : users) {
             if (user.get("username").equals(username) && user.get("password").equals(hashSHA1(password))) {
                 user.replace("socket", socket);
                 user.replace("online", 1);
@@ -97,7 +106,7 @@ public class UserSecuritySingleton {
     }
 
     public boolean checkToken(String socket, String token) {
-        for (HashMap<String, Object> user : users) {
+        for (Map user : users) {
             if (user.get("token").equals(token)) {
                 user.replace("socket", socket);
                 user.replace("online", 1);
@@ -109,7 +118,7 @@ public class UserSecuritySingleton {
     }
 
     public void autoRevokeToken() {
-        for (HashMap<String, Object> user : users) {
+        for (Map user : users) {
             if (user.get("token") != "") {
                 if ((long) user.get("expires_in") < System.currentTimeMillis()) {
                     ServerSingleton.getInstance().log("[SYSTEM] -> User: " + user.get("username") + " token's revoked");
@@ -120,8 +129,17 @@ public class UserSecuritySingleton {
         }
     }
 
+    public Map getUserObj(String socket) {
+        for (Map user : users) {
+            if (user.get("socket").equals(socket)) {
+                return user;
+            }
+        }
+        return null;
+    }
+
     public Object getUserToken(String socket) {
-        for (HashMap<String, Object> user : users) {
+        for (Map user : users) {
             if (user.get("socket").equals(socket)) {
                 return user.get("token");
             }
@@ -130,7 +148,7 @@ public class UserSecuritySingleton {
     }
 
     public Object getUserGroup(String socket) {
-        for (HashMap<String, Object> user : users) {
+        for (Map user : users) {
             if (user.get("socket").equals(socket)) {
                 return user.get("group");
             }
@@ -139,7 +157,7 @@ public class UserSecuritySingleton {
     }
 
     public int getUserId(String socket) {
-        for (HashMap<String, Object> user : users) {
+        for (Map user : users) {
             if (user.get("socket").equals(socket)) {
                 return (int) user.get("id");
             }
@@ -148,7 +166,7 @@ public class UserSecuritySingleton {
     }
 
     public String getUserName(String socket) {
-        for (HashMap<String, Object> user : users) {
+        for (Map user : users) {
             if (user.get("socket").equals(socket)) {
                 return (String) user.get("username");
             }
@@ -157,7 +175,7 @@ public class UserSecuritySingleton {
     }
 
     public Object getTokenExpires(String socket) {
-        for (HashMap<String, Object> user : users) {
+        for (Map user : users) {
             if (user.get("socket").equals(socket)) {
                 return user.get("expires_in");
             }
@@ -166,7 +184,7 @@ public class UserSecuritySingleton {
     }
 
     public int getIdByToken(String token) {
-        for (HashMap<String, Object> user : users) {
+        for (Map user : users) {
             if (user.get("token").equals(token)) {
                 return (int) user.get("id");
             }
@@ -175,7 +193,7 @@ public class UserSecuritySingleton {
     }
 
     public void revokUserToken(String socket) {
-        for (HashMap<String, Object> user : users) {
+        for (Map user : users) {
             if (user.get("socket").equals(socket)) {
                 user.replace("token", "");
                 user.replace("expires_in", 0);
@@ -184,7 +202,7 @@ public class UserSecuritySingleton {
     }
 
     public void setUserOffline(String socket) {
-        for (HashMap<String, Object> user : users) {
+        for (Map user : users) {
             if (user.get("socket").equals(socket)) {
                 user.replace("online", 0);
             }

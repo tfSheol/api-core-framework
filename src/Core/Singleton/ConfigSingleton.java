@@ -1,6 +1,9 @@
 package Core.Singleton;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Properties;
 
 /**
@@ -29,8 +32,16 @@ public class ConfigSingleton {
         return props;
     }
 
-    public String getPropertie(String key) {
+    public String getString(String key) {
         return props.getProperty(key);
+    }
+
+    public boolean getBoolean(String key) {
+        return Boolean.parseBoolean(props.getProperty(key));
+    }
+
+    public int getInt(String key) {
+        return Integer.parseInt(props.getProperty(key));
     }
 
     public int getPort() {

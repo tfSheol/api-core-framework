@@ -22,6 +22,11 @@ public class Error extends Model {
     }
 
     @Override
+    protected Object setData(Map result) {
+        return null;
+    }
+
+    @Override
     public void setPath(String path) {
         super.setPath(path);
     }

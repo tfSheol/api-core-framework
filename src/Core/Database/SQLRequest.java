@@ -1,5 +1,6 @@
 package Core.Database;
 
+import Core.Http.Map;
 import Core.Singleton.ConfigSingleton;
 import Core.Singleton.ServerSingleton;
 
@@ -9,13 +10,12 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Created by teddy on 03/04/2016.
  */
 public class SQLRequest {
-    private ArrayList<HashMap<String, Object>> entities = new ArrayList<>();
+    private ArrayList<Map> entities = new ArrayList<>();
     private String request;
     private JDBCLib sql = new MyJDBC().load();
     private int generatedId = -1;
@@ -24,7 +24,7 @@ public class SQLRequest {
         this.request = request;
     }
 
-    public ArrayList<HashMap<String, Object>> getResultSet() {
+    public ArrayList<Map> getResultSet() {
         return entities;
     }
 
@@ -34,16 +34,16 @@ public class SQLRequest {
             result = sql.selectDB(request);
             ResultSetMetaData metaData = result.getMetaData();
             while (result.next()) {
-                HashMap<String, Object> data = new HashMap<>();
+                Map data = new Map();
                 for (int i = 1; i <= metaData.getColumnCount(); i++) {
                     if (result.getObject(i).getClass().getTypeName().equals("java.lang.String")) {
                         try {
-                            data.put(metaData.getColumnLabel(i), URLDecoder.decode(result.getObject(i).toString(), ConfigSingleton.getInstance().getCharset()));
+                            data.put(metaData.getTableName(i) + "." + metaData.getColumnLabel(i), URLDecoder.decode(result.getObject(i).toString(), ConfigSingleton.getInstance().getCharset()));
                         } catch (UnsupportedEncodingException e) {
                             ServerSingleton.getInstance().log("URLDecode : " + e, true);
                         }
                     } else {
-                        data.put(metaData.getColumnLabel(i), result.getObject(i));
+                        data.put(metaData.getTableName(i) + "." + metaData.getColumnLabel(i), result.getObject(i));
                     }
                 }
                 entities.add(data);

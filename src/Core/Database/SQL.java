@@ -19,13 +19,13 @@ public class SQL {
         for (int i = 0; i < values.length; i++) {
             if (values[i].getClass().getTypeName().equals("java.lang.String")) {
                 try {
-                    values[i] = "\"" + URLEncoder.encode(values[i].toString(), ConfigSingleton.getInstance().getCharset()) + "\"";
+                    values[i] = URLEncoder.encode(values[i].toString(), ConfigSingleton.getInstance().getCharset());
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
             }
         }
-        return String.format(subject.replace("%", "%%").replace("?", "%s"), values);
+        return String.format(subject.replace("%", "%%").replace("?", "'%s'"), values);
     }
 
     public void insertDB(String sql) {

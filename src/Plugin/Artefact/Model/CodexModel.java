@@ -1,6 +1,7 @@
 package Plugin.Artefact.Model;
 
 import Core.Database.SQLRequest;
+import Core.Http.Map;
 import Core.Model;
 import Plugin.Artefact.Obj.ArtefactObj;
 
@@ -75,5 +76,10 @@ public class CodexModel extends Model {
             artefactObj.type.name = (String) sql.getResultSet().get(i).get("types.name");
             data.add(artefactObj);
         }
+    }
+
+    @Override
+    protected Object setData(Map result) {
+        return null;
     }
 }

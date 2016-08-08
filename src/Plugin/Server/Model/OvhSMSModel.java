@@ -1,5 +1,6 @@
 package Plugin.Server.Model;
 
+import Core.Http.Map;
 import Core.Model;
 import Core.Singleton.ServerSingleton;
 import Core.Singleton.UserSecuritySingleton;
@@ -110,5 +111,10 @@ public class OvhSMSModel extends Model {
             final String errmsg = "IOException: " + e;
         }
         return "";
+    }
+
+    @Override
+    protected Object setData(Map result) {
+        return null;
     }
 }

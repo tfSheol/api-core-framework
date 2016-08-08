@@ -8,9 +8,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class JDBCLib extends SQL {
-    private String url = ConfigSingleton.getInstance().getPropertie("db_url");
-    private String username = ConfigSingleton.getInstance().getPropertie("db_username");
-    private String password = ConfigSingleton.getInstance().getPropertie("db_password");
+    private String url = ConfigSingleton.getInstance().getString("db_url");
+    private String username = ConfigSingleton.getInstance().getString("db_username");
+    private String password = ConfigSingleton.getInstance().getString("db_password");
 
     @SQLDriver("Sqlite")
     public JDBCLib sqlite() {

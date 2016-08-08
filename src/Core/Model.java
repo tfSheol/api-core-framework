@@ -2,6 +2,7 @@ package Core;
 
 import Core.Database.SQLRequest;
 import Core.Http.Code;
+import Core.Http.Map;
 import Core.Singleton.ServerSingleton;
 import org.reflections.Reflections;
 
@@ -12,7 +13,7 @@ import java.util.Set;
 /**
  * Created by teddy on 21/05/2016.
  */
-public class Model {
+public abstract class Model {
     private String path;
     private String method;
     private int code = Code.OK;
@@ -115,23 +116,32 @@ public class Model {
         return "OK";
     }
 
-    protected void setGet(String request) {
+    protected abstract Object setData(Map result);
 
+    protected void setGet(String request) {
+        SQLRequest sql = new SQLRequest(request);
+        sql.select();
+        for (Map result : sql.getResultSet()) {
+            Object ret = setData(result);
+            if (ret != null) {
+                data.add(ret);
+            }
+        }
     }
 
-    protected void setPost(String socket, String request) {
+    protected void setPost(String request) {
         SQLRequest sqLite = new SQLRequest(request);
         sqLite.insert();
         id = sqLite.getGeneratedId();
     }
 
-    protected void setPut(String socket, String request) {
+    protected void setPut(String request) {
         SQLRequest sqLite = new SQLRequest(request);
         sqLite.update();
         id = sqLite.getGeneratedId();
     }
 
-    protected void setDelete(String socket, String request) {
+    protected void setDelete(String request) {
         SQLRequest sqLite = new SQLRequest(request);
         sqLite.delete();
         id = sqLite.getGeneratedId();

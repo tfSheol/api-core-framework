@@ -1,5 +1,6 @@
 package Plugin.Server.Model;
 
+import Core.Http.Map;
 import Core.Model;
 import Core.Singleton.ConfigSingleton;
 import Core.Singleton.NbClientsSingleton;
@@ -28,5 +29,10 @@ public class ServerModel extends Model {
         data.add(serverObj);
         runtime = null;
         mb = null;
+    }
+
+    @Override
+    protected Object setData(Map result) {
+        return null;
     }
 }

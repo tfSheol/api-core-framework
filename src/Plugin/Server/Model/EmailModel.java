@@ -1,6 +1,7 @@
 package Plugin.Server.Model;
 
 import Core.Http.Code;
+import Core.Http.Map;
 import Core.Model;
 import Core.Singleton.ServerSingleton;
 
@@ -46,5 +47,10 @@ public class EmailModel extends Model {
             e.printStackTrace();
         }
         return this;
+    }
+
+    @Override
+    protected Object setData(Map result) {
+        return null;
     }
 }

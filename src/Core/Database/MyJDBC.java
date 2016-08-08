@@ -13,7 +13,7 @@ import java.lang.reflect.Method;
 public class MyJDBC {
     public JDBCLib load() {
         for (Method methods : JDBCLib.class.getDeclaredMethods()) {
-            if (methods.getAnnotation(SQLDriver.class).value().equals(ConfigSingleton.getInstance().getPropertie("database_type"))) {
+            if (methods.getAnnotation(SQLDriver.class).value().equals(ConfigSingleton.getInstance().getString("database_type"))) {
                 try {
                     return (JDBCLib) methods.invoke(JDBCLib.class.newInstance());
                 } catch (IllegalAccessException | InvocationTargetException | InstantiationException e) {

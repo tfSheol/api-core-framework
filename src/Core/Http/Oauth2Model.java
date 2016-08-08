@@ -13,7 +13,12 @@ public class Oauth2Model extends Model {
     public String scope = "read/write";
     public Integer group;
 
-    public Oauth2Model(String socket, Oauth2 oauth2) {
+    @Override
+    protected Object setData(Map result) {
+        return null;
+    }
+
+    public Oauth2Model initUser(String socket, Oauth2 oauth2) {
         if (oauth2.login(socket)) {
             access_token = (String) UserSecuritySingleton.getInstance().getUserToken(socket);
             group = (int) UserSecuritySingleton.getInstance().getUserGroup(socket);
@@ -25,6 +30,11 @@ public class Oauth2Model extends Model {
             expires_in = null;
             group = null;
         }
-        data = null;
+        return this;
+    }
+
+    public Oauth2Model revokToken(String socket) {
+        UserSecuritySingleton.getInstance().revokUserToken(socket);
+        return this;
     }
 }

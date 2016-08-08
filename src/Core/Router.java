@@ -46,7 +46,8 @@ public class Router {
                                     ServerSingleton.getInstance().log(socket, "[SERVER] -> error on route finder : " + e, true);
                                 } catch (InvocationTargetException e) {
                                     error.setErrorMsg(e.getTargetException().getMessage());
-                                    ServerSingleton.getInstance().log(socket, "[SERVER] -> " + e.getTargetException().getMessage(), true);
+                                    e.printStackTrace();
+                                    ServerSingleton.getInstance().log(socket, "[SERVER] -> router: " + e.getTargetException().getMessage(), true);
                                 }
                             }
                         }
