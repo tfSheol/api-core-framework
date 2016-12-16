@@ -7,11 +7,14 @@ import Core.Http.LoggerService;
 import Core.Task;
 import org.reflections.Reflections;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Set;
+import java.io.*;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 /**
  * Created by teddy on 05/05/2016.
@@ -30,7 +33,66 @@ public class ServerSingleton {
         Reflections reflections = new Reflections("Plugin.*");
         annotated = reflections.getTypesAnnotatedWith(Controller.class);
         tasks = reflections.getTypesAnnotatedWith(Task.class);
+        createFolder("plugins");
+        logger.setLogMsg("[SYSTEM] -> Nb plugins loaded: " + annotated.size());
         taskRunner();
+    }
+
+    private void createFolder(String folder) {
+        if (!Files.exists(Paths.get(folder))) {
+            try {
+                Files.createDirectory(Paths.get(folder));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        initPlugins(folder);
+    }
+
+    private void initPlugins(String folder) {
+        File pluginsDir = new File(System.getProperty("user.dir") + "/" + folder);
+        String[] jarFileInFolder = pluginsDir.list(new FilenameFilter() {
+            public boolean accept(File directory, String fileName) {
+                return fileName.endsWith(".jar");
+            }
+        });
+        if (jarFileInFolder != null) {
+            for (String jar : jarFileInFolder) {
+                try {
+                    JarFile jarFile = new JarFile(folder + "/" + jar);
+                    Enumeration<JarEntry> enumeration = jarFile.entries();
+                    URL[] urls = {new URL("jar:file:" + folder + "/" + jar + "!/")};
+                    URLClassLoader loader = URLClassLoader.newInstance(urls);
+                    while (enumeration.hasMoreElements()) {
+                        JarEntry jarEntry = enumeration.nextElement();
+                        if (jarEntry.getName().endsWith(".class")) {
+                            String className = jarEntry.getName().substring(0, jarEntry.getName().length() - 6).replace('/', '.');
+                            if (className.startsWith("Plugin.")) {
+                                Class currentClass = loader.loadClass(className);
+                                addController(currentClass, className);
+                                addTask(currentClass, className);
+                            }
+                        }
+                    }
+                } catch (IOException | ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private void addController(Class currentClass, String className) {
+        if (currentClass.isAnnotationPresent(Controller.class)) {
+            annotated.add(currentClass);
+            logger.setLogMsg("[PLUGIN] -> Extra plugin: " + currentClass.getSimpleName().replace("Controller", ""));
+        }
+    }
+
+    private void addTask(Class currentClass, String className) {
+        if (currentClass.isAnnotationPresent(Task.class)) {
+            tasks.add(currentClass);
+            logger.setLogMsg("[PLUGIN] -> Extra task: " + currentClass.getSimpleName().replace("Task", ""));
+        }
     }
 
     private static class SingletonHolder {

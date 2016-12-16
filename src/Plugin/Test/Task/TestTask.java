@@ -6,10 +6,10 @@ import Core.Task;
 /**
  * Created by teddy on 10/06/2016.
  */
-@Task
+@Task()
 public class TestTask extends Job {
     @Override
     public void task() {
-        System.out.println("coucou");
+        System.out.println("test task");
     }
 }
