@@ -20,9 +20,9 @@ public class Oauth2Model extends Model {
 
     public Oauth2Model initUser(String socket, Oauth2 oauth2) {
         if (oauth2.login(socket)) {
-            access_token = (String) UserSecuritySingleton.getInstance().getUserToken(socket);
-            group = (int) UserSecuritySingleton.getInstance().getUserGroup(socket);
-            expires_in = (long) UserSecuritySingleton.getInstance().getTokenExpires(socket);
+            access_token = UserSecuritySingleton.getInstance().getUserToken(socket);
+            group = UserSecuritySingleton.getInstance().getUserGroup(socket);
+            expires_in = UserSecuritySingleton.getInstance().getTokenExpires(socket);
         } else {
             setCode(socket, Code.UNAUTHORIZED);
             scope = null;

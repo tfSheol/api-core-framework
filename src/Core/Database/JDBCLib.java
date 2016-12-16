@@ -20,7 +20,7 @@ public class JDBCLib extends SQL {
             stmt = c.createStatement();
             c.setAutoCommit(false);
         } catch (ClassNotFoundException | SQLException e) {
-            ServerSingleton.getInstance().log("Sqlite : " + e.getMessage(), true);
+            ServerSingleton.getInstance().log("Sqlite : " + e.getMessage(), e);
         }
         return this;
     }
@@ -33,7 +33,7 @@ public class JDBCLib extends SQL {
             stmt = c.createStatement();
             c.setAutoCommit(false);
         } catch (ClassNotFoundException | SQLException e) {
-            ServerSingleton.getInstance().log("MySQL : " + e.getMessage(), true);
+            ServerSingleton.getInstance().log("MySQL : " + e.getMessage(), e);
         }
         return this;
     }
@@ -46,7 +46,7 @@ public class JDBCLib extends SQL {
             stmt = c.createStatement();
             c.setAutoCommit(false);
         } catch (ClassNotFoundException | SQLException e) {
-            ServerSingleton.getInstance().log("PostgreSQL : " + e.getMessage(), true);
+            ServerSingleton.getInstance().log("PostgreSQL : " + e.getMessage(), e);
         }
         return this;
     }

@@ -16,7 +16,7 @@ public class Oauth2Permissions {
                     if (PermsSingleton.getInstance().checkRouteWithoutPerms(method, route)) {
                         return true;
                     } else if (UserSecuritySingleton.getInstance().checkToken(socket, oauth2.getToken()) &&
-                            PermsSingleton.getInstance().checkRouteWithPerms(method, route, (int) UserSecuritySingleton.getInstance().getUserGroup(socket))) {
+                            PermsSingleton.getInstance().checkRouteWithPerms(method, route, UserSecuritySingleton.getInstance().getUserGroup(socket))) {
                         return true;
                     }
                 }

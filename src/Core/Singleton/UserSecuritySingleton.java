@@ -7,14 +7,14 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by teddy on 05/05/2016.
  */
 public class UserSecuritySingleton {
     private static UserSecuritySingleton instance = new UserSecuritySingleton();
-    private ArrayList<Map> users = new ArrayList<>();
+    private CopyOnWriteArrayList<Map> users = new CopyOnWriteArrayList<>();
     private int nbUsers = 0;
 
     public static UserSecuritySingleton getInstance() {
@@ -43,18 +43,22 @@ public class UserSecuritySingleton {
 
     private static String toHex(byte[] data) {
         StringBuilder buf = new StringBuilder();
-        for (int i = 0; i < data.length; i++) {
-            int halfbyte = (data[i] >>> 4) & 0x0F;
+        for (byte aData : data) {
+            int halfbyte = (aData >>> 4) & 0x0F;
             int two_halfs = 0;
             do {
                 if ((0 <= halfbyte) && (halfbyte <= 9))
                     buf.append((char) ('0' + halfbyte));
                 else
                     buf.append((char) ('a' + (halfbyte - 10)));
-                halfbyte = data[i] & 0x0F;
+                halfbyte = aData & 0x0F;
             } while (two_halfs++ < 1);
         }
         return buf.toString();
+    }
+
+    public CopyOnWriteArrayList<Map> getUsers() {
+        return users;
     }
 
     public int getNbUsers() {
@@ -63,31 +67,56 @@ public class UserSecuritySingleton {
 
     public void addUser(int id, String username, String password, int group) {
         Map user = new Map();
-        user.put("username", username);
+        user.put("username", username.toLowerCase());
         user.put("password", password);
         user.put("id", id);
         user.put("group", group);
-        user.put("socket", "");
         user.put("online", 0);
-        user.put("token", "");
-        user.put("expires_in", 0);
+        user.put("token_lib", new ArrayList<Map>());
         nbUsers++;
         users.add(user);
     }
 
+    public void cleanUsers() {
+        users.clear();
+    }
+
     public void updateUser(String socket, String key, Object value) {
         for (Map user : users) {
-            if (user.get("socket").equals(socket)) {
+            for (Map currentToken : user.getArrayList("token_lib")) {
+                if (currentToken.containsKey("socket") && currentToken.get("socket").equals(socket)) {
+                    user.replace(key, value);
+                }
+            }
+        }
+    }
+
+    public void updateUserById(int id, String key, Object value) {
+        for (Map user : users) {
+            if (user.containsKey("id") && user.get("id").equals(id)) {
                 user.replace(key, value);
             }
         }
     }
 
+    public void updateSocketToken(String socket, String token) {
+        for (Map user : users) {
+            for (Map currentToken : user.getArrayList("token_lib")) {
+                if (currentToken.containsKey("token") && currentToken.get("token").equals(token)) {
+                    currentToken.replace("socket", socket);
+                }
+            }
+        }
+    }
+
+
     public void updateFullUser(String socket, String username, String password) {
         for (Map user : users) {
-            if (user.get("socket").equals(socket)) {
-                user.replace("username", username);
-                user.replace("password", password);
+            for (Map currentToken : user.getArrayList("token_lib")) {
+                if (currentToken.containsKey("socket") && currentToken.get("socket").equals(socket)) {
+                    user.replace("username", username);
+                    user.replace("password", password);
+                }
             }
         }
     }
@@ -95,10 +124,16 @@ public class UserSecuritySingleton {
     public boolean checkUser(String socket, String username, String password) {
         for (Map user : users) {
             if (user.get("username").equals(username) && user.get("password").equals(hashSHA1(password))) {
-                user.replace("socket", socket);
+                ArrayList<Map> currentTokenLib = user.getArrayList("token_lib");
+                if (currentTokenLib.size() >= ConfigSingleton.getInstance().getInt("token_max")) {
+                    currentTokenLib.remove(0);
+                }
                 user.replace("online", 1);
-                user.replace("token", Oauth2.generateToken());
-                user.replace("expires_in", System.currentTimeMillis() + (ConfigSingleton.getInstance().getTokenExpires() * 1000));
+                Map map = new Map();
+                map.put("socket", socket);
+                map.put("token", Oauth2.generateToken());
+                map.put("expires_in", System.currentTimeMillis() + (ConfigSingleton.getInstance().getTokenExpires() * 1000));
+                currentTokenLib.add(map);
                 return true;
             }
         }
@@ -107,11 +142,13 @@ public class UserSecuritySingleton {
 
     public boolean checkToken(String socket, String token) {
         for (Map user : users) {
-            if (user.get("token").equals(token)) {
-                user.replace("socket", socket);
-                user.replace("online", 1);
-                user.replace("expires_in", System.currentTimeMillis() + (ConfigSingleton.getInstance().getTokenExpires() * 1000));
-                return true;
+            for (Map currentToken : user.getArrayList("token_lib")) {
+                if (currentToken.containsKey("token") && currentToken.getString("token").equals(token)) {
+                    currentToken.replace("socket", socket);
+                    user.replace("online", 1);
+                    currentToken.replace("expires_in", System.currentTimeMillis() + (ConfigSingleton.getInstance().getTokenExpires() * 1000));
+                    return true;
+                }
             }
         }
         return false;
@@ -119,11 +156,13 @@ public class UserSecuritySingleton {
 
     public void autoRevokeToken() {
         for (Map user : users) {
-            if (user.get("token") != "") {
-                if ((long) user.get("expires_in") < System.currentTimeMillis()) {
-                    ServerSingleton.getInstance().log("[SYSTEM] -> User: " + user.get("username") + " token's revoked");
-                    user.replace("token", "");
-                    user.replace("expires_in", 0);
+            for (int i = 0; i < user.getArrayList("token_lib").size(); i++) {
+                Map currentToken = user.getArrayList("token_lib").get(i);
+                if (currentToken.containsKey("token")) {
+                    if ((long) currentToken.get("expires_in") < System.currentTimeMillis()) {
+                        ServerSingleton.getInstance().log("[SYSTEM] -> User: " + user.get("username") + " " + currentToken.getString("token") + " token's revoked");
+                        user.getArrayList("token_lib").remove(i);
+                    }
                 }
             }
         }
@@ -131,26 +170,32 @@ public class UserSecuritySingleton {
 
     public Map getUserObj(String socket) {
         for (Map user : users) {
-            if (user.get("socket").equals(socket)) {
-                return user;
+            for (Map currentToken : user.getArrayList("token_lib")) {
+                if (currentToken.containsKey("socket") && currentToken.get("socket").equals(socket)) {
+                    return user;
+                }
             }
         }
         return null;
     }
 
-    public Object getUserToken(String socket) {
+    public String getUserToken(String socket) {
         for (Map user : users) {
-            if (user.get("socket").equals(socket)) {
-                return user.get("token");
+            for (Map currentToken : user.getArrayList("token_lib")) {
+                if (currentToken.containsKey("socket") && currentToken.get("socket").equals(socket)) {
+                    return currentToken.getString("token");
+                }
             }
         }
         return "";
     }
 
-    public Object getUserGroup(String socket) {
+    public int getUserGroup(String socket) {
         for (Map user : users) {
-            if (user.get("socket").equals(socket)) {
-                return user.get("group");
+            for (Map currentToken : user.getArrayList("token_lib")) {
+                if (currentToken.containsKey("socket") && currentToken.get("socket").equals(socket)) {
+                    return user.getInt("group");
+                }
             }
         }
         return -1;
@@ -158,8 +203,10 @@ public class UserSecuritySingleton {
 
     public int getUserId(String socket) {
         for (Map user : users) {
-            if (user.get("socket").equals(socket)) {
-                return (int) user.get("id");
+            for (Map currentToken : user.getArrayList("token_lib")) {
+                if (currentToken.containsKey("socket") && currentToken.get("socket").equals(socket)) {
+                    return user.getInt("id");
+                }
             }
         }
         return -1;
@@ -167,17 +214,21 @@ public class UserSecuritySingleton {
 
     public String getUserName(String socket) {
         for (Map user : users) {
-            if (user.get("socket").equals(socket)) {
-                return (String) user.get("username");
+            for (Map currentToken : user.getArrayList("token_lib")) {
+                if (currentToken.containsKey("socket") && currentToken.get("socket").equals(socket)) {
+                    return user.getString("username");
+                }
             }
         }
         return "";
     }
 
-    public Object getTokenExpires(String socket) {
+    public long getTokenExpires(String socket) {
         for (Map user : users) {
-            if (user.get("socket").equals(socket)) {
-                return user.get("expires_in");
+            for (Map currentToken : user.getArrayList("token_lib")) {
+                if (currentToken.containsKey("socket") && currentToken.get("socket").equals(socket)) {
+                    return currentToken.getLong("expires_in");
+                }
             }
         }
         return -1;
@@ -185,34 +236,56 @@ public class UserSecuritySingleton {
 
     public int getIdByToken(String token) {
         for (Map user : users) {
-            if (user.get("token").equals(token)) {
-                return (int) user.get("id");
+            for (Map currentToken : user.getArrayList("token_lib")) {
+                if (currentToken.containsKey("socket") && currentToken.get("token").equals(token)) {
+                    return user.getInt("id");
+                }
             }
         }
         return -1;
     }
 
+
+    public String getSocketById(int id) {
+        for (Map user : users) {
+            if (user.containsKey("id") && user.get("id").equals(id)) {
+                for (Map currentToken : user.getArrayList("token_lib")) {
+                    if (currentToken.containsKey("socket")) {
+                        return user.getString("socket");
+                    }
+                }
+            }
+        }
+        return "";
+    }
+
     public void revokUserToken(String socket) {
         for (Map user : users) {
-            if (user.get("socket").equals(socket)) {
-                user.replace("token", "");
-                user.replace("expires_in", 0);
+            for (int i = 0; i < user.getArrayList("token_lib").size(); i++) {
+                Map currentToken = user.getArrayList("token_lib").get(i);
+                if (currentToken.containsKey("socket") && currentToken.get("socket").equals(socket)) {
+                    user.getArrayList("token_lib").remove(i);
+                }
             }
         }
     }
 
     public void setUserOffline(String socket) {
         for (Map user : users) {
-            if (user.get("socket").equals(socket)) {
-                user.replace("online", 0);
+            for (Map currentToken : user.getArrayList("token_lib")) {
+                if (currentToken.containsKey("socket") && currentToken.get("socket").equals(socket)) {
+                    user.replace("online", 0);
+                }
             }
         }
     }
 
     public void removeUser(String socket) {
         for (int i = 0; i < users.size(); i++) {
-            if (users.get(i).get("socket").equals(socket)) {
-                users.remove(i);
+            for (Map currentToken : users.get(i).getArrayList("token_lib")) {
+                if (currentToken.containsKey("socket") && currentToken.get("socket").equals(socket)) {
+                    users.remove(i);
+                }
             }
         }
     }

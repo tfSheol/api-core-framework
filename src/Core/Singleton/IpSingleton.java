@@ -22,8 +22,8 @@ public class IpSingleton {
             FileReader reader = new FileReader(ipFile);
             props.load(reader);
             reader.close();
-        } catch (IOException ex) {
-            ServerSingleton.getInstance().log("IOException : " + ex, true);
+        } catch (IOException e) {
+            ServerSingleton.getInstance().log("IOException : " + e, e);
         }
     }
 
@@ -31,12 +31,18 @@ public class IpSingleton {
         return instance;
     }
 
-    public void setIpFail(String ip) {
+    public String convertToIp(String socket) {
+        return new StringBuilder(new StringBuilder(socket).reverse().toString().replace("/", "").replaceFirst(":", " ")).reverse().toString().split(" ")[0];
+    }
+
+    public void setIpFail(String socket) {
+        String ip = convertToIp(socket);
         if (!isBanned(ip) && !isWhiteListed(ip)) {
             boolean founded = false;
             for (int i = 0; i < ipList.size(); i++) {
                 if (ipList.get(i).get("ip").equals(ip)) {
-                    if (((Integer) ipList.get(i).get("attempt")) > Integer.parseInt(ConfigSingleton.getInstance().getMaxAttempt())) {
+                    ServerSingleton.getInstance().log("[SERVER BAN IP] -> " + socket + " as a suspicious behavior (attempt: " + ipList.get(i).get("attempt") + "/" + Integer.parseInt(ConfigSingleton.getInstance().getMaxAttempt()) + ")");
+                    if (((Integer) ipList.get(i).get("attempt")) >= Integer.parseInt(ConfigSingleton.getInstance().getMaxAttempt())) {
                         banIp(ip);
                         ipList.remove(i);
                         i--;
@@ -47,6 +53,7 @@ public class IpSingleton {
                 }
             }
             if (!founded) {
+                ServerSingleton.getInstance().log("[SERVER BAN IP] -> " + socket + " as a suspicious behavior and " + ip + " as added to watch list");
                 HashMap<String, Object> newIp = new HashMap<>();
                 newIp.put("ip", ip);
                 newIp.put("attempt", 1);
@@ -67,6 +74,7 @@ public class IpSingleton {
 
     public void reloadIp() {
         try {
+            props.clear();
             FileReader reader = new FileReader(ipFile);
             props.load(reader);
             reader.close();
@@ -81,8 +89,33 @@ public class IpSingleton {
             FileWriter writer = new FileWriter(ipFile);
             props.store(writer, "IP");
             writer.close();
+            ServerSingleton.getInstance().log("[SERVER BAN IP] -> " + ip + " as been banned!");
         } catch (IOException e) {
-            e.printStackTrace();
+            ServerSingleton.getInstance().log("[SERVER BAN IP] -> Exception occurred while ban ip " + ip, e);
+        }
+    }
+
+    public void unbanIp(String ip) {
+        try {
+            props.remove(ip);
+            FileWriter writer = new FileWriter(ipFile);
+            props.store(writer, "IP");
+            writer.close();
+            ServerSingleton.getInstance().log("[SERVER BAN IP] -> " + ip + " as been unbanned!");
+        } catch (IOException e) {
+            ServerSingleton.getInstance().log("[SERVER BAN IP] -> Exception occurred while unban ip " + ip, e);
+        }
+    }
+
+    public void whiteListIp(String ip) {
+        try {
+            props.setProperty(ip, String.valueOf(true));
+            FileWriter writer = new FileWriter(ipFile);
+            props.store(writer, "IP");
+            writer.close();
+            ServerSingleton.getInstance().log("[SERVER BAN IP] -> " + ip + " as been white listed!");
+        } catch (IOException e) {
+            ServerSingleton.getInstance().log("[SERVER BAN IP] -> Exception occurred while white listed ip " + ip, e);
         }
     }
 }

@@ -17,11 +17,11 @@ public class MyJDBC {
                 try {
                     return (JDBCLib) methods.invoke(JDBCLib.class.newInstance());
                 } catch (IllegalAccessException | InvocationTargetException | InstantiationException e) {
-                    ServerSingleton.getInstance().log("MyJDBC : " + e.getMessage(), true);
+                    ServerSingleton.getInstance().log("MyJDBC : " + e.getMessage(), e);
                 }
             }
         }
-        ServerSingleton.getInstance().log("MyJDBC : no database driver supported founded", true);
+        ServerSingleton.getInstance().log("MyJDBC : no database driver supported founded", new Exception());
         return null;
     }
 }

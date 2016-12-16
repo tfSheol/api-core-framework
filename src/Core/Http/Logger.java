@@ -46,8 +46,8 @@ public class Logger extends Thread {
                             }
                         }
                         if (log.get(i).containsKey("error")) {
-                            pw.println(currentTime + log.get(i).get("error") + log.get(i).get("socket") + user + log.get(i).get("value"));
-                            System.err.println(log.get(i).get("error") + log.get(i).get("socket") + user + log.get(i).get("value"));
+                            pw.println(currentTime + log.get(i).get("socket") + user + log.get(i).get("value") + log.get(i).get("error"));
+                            System.err.println(log.get(i).get("socket") + user + log.get(i).get("value") + log.get(i).get("error"));
                         } else {
                             pw.println(currentTime + log.get(i).get("socket") + user + log.get(i).get("value"));
                             System.out.println(log.get(i).get("socket") + user + log.get(i).get("value"));
@@ -71,14 +71,6 @@ public class Logger extends Thread {
         log.add(hashMap);
     }
 
-    public void setLogMsg(String value, boolean error) {
-        HashMap<String, String> hashMap = new HashMap<>();
-        hashMap.put("socket", "[" + LOCAL + "]");
-        hashMap.put("error", "[" + ERROR + "]");
-        hashMap.put("value", value);
-        log.add(hashMap);
-    }
-
     public void setLogMsg(String socket, String value) {
         HashMap<String, String> hashMap = new HashMap<>();
         hashMap.put("socket", "[" + socket + "]");
@@ -86,11 +78,12 @@ public class Logger extends Thread {
         log.add(hashMap);
     }
 
-    public void setLogMsg(String socket, String value, boolean error) {
+    public void setLogMsg(String socket, String value, String error) {
         HashMap<String, String> hashMap = new HashMap<>();
         hashMap.put("error", "[" + ERROR + "]");
         hashMap.put("socket", "[" + socket + "]");
         hashMap.put("value", value);
+        hashMap.put("error", error);
         log.add(hashMap);
     }
 

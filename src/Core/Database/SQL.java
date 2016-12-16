@@ -19,6 +19,25 @@ public class SQL {
         for (int i = 0; i < values.length; i++) {
             if (values[i].getClass().getTypeName().equals("java.lang.String")) {
                 try {
+                    values[i] = values[i].toString().replaceAll("%", "%25");
+                    values[i] = values[i].toString().replaceAll("\\+", "%2B");
+                    /*values[i] = values[i].toString().replaceAll("!", "");
+                    values[i] = values[i].toString().replaceAll("\\*", "");
+                    values[i] = values[i].toString().replaceAll("'", "");
+                    values[i] = values[i].toString().replaceAll("\\(", "");
+                    values[i] = values[i].toString().replaceAll("\\)", "");
+                    values[i] = values[i].toString().replaceAll(";", "");
+                    values[i] = values[i].toString().replaceAll(":", "");
+                    values[i] = values[i].toString().replaceAll("@", "");
+                    values[i] = values[i].toString().replaceAll("&", "");
+                    values[i] = values[i].toString().replaceAll("=", "");
+                    values[i] = values[i].toString().replaceAll("$", "");
+                    values[i] = values[i].toString().replaceAll(",", "");
+                    values[i] = values[i].toString().replaceAll("/", "");
+                    values[i] = values[i].toString().replaceAll("\\?", "");
+                    values[i] = values[i].toString().replaceAll("#", "");
+                    values[i] = values[i].toString().replaceAll("\\[", "");
+                    values[i] = values[i].toString().replaceAll("\\]", "");*/
                     values[i] = URLEncoder.encode(values[i].toString(), ConfigSingleton.getInstance().getCharset());
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
@@ -28,43 +47,18 @@ public class SQL {
         return String.format(subject.replace("%", "%%").replace("?", "'%s'"), values);
     }
 
-    public void insertDB(String sql) {
+    public void requestDB(String sql) {
         try {
             PreparedStatement preparedStatement = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             preparedStatement.execute();
             c.commit();
             ResultSet rs = preparedStatement.getGeneratedKeys();
-            rs.next();
-            generatedId = rs.getInt(1);
+            if (rs.next()) {
+                generatedId = rs.getInt(1);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
-            ServerSingleton.getInstance().log("SQLException on insert: " + e.getMessage(), true);
-        }
-    }
-
-    public void updateDB(String sql) {
-        try {
-            PreparedStatement preparedStatement = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            preparedStatement.execute();
-            c.commit();
-            ResultSet rs = preparedStatement.getGeneratedKeys();
-            rs.next();
-            generatedId = rs.getInt(1);
-        } catch (SQLException e) {
-            ServerSingleton.getInstance().log("SQLException on update: " + e.getMessage(), true);
-        }
-    }
-
-    public void deleteDB(String sql) {
-        try {
-            PreparedStatement preparedStatement = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            preparedStatement.execute();
-            c.commit();
-            ResultSet rs = preparedStatement.getGeneratedKeys();
-            rs.next();
-            generatedId = rs.getInt(1);
-        } catch (SQLException e) {
-            ServerSingleton.getInstance().log("SQLException on delete: " + e.getMessage(), true);
+            ServerSingleton.getInstance().log("SQLException on insert: " + e.getMessage(), e);
         }
     }
 
@@ -75,7 +69,7 @@ public class SQL {
             c.commit();
             return result;
         } catch (SQLException e) {
-            ServerSingleton.getInstance().log("SQLException on select: " + e.getMessage(), true);
+            ServerSingleton.getInstance().log("SQLException on select: " + e.getMessage(), e);
         }
         return null;
     }
@@ -85,7 +79,7 @@ public class SQL {
             stmt.close();
             c.close();
         } catch (SQLException e) {
-            ServerSingleton.getInstance().log("SQLException on close: " + e.getMessage(), true);
+            ServerSingleton.getInstance().log("SQLException on close: " + e.getMessage(), e);
         }
     }
 

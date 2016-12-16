@@ -22,6 +22,7 @@ public abstract class Model {
     private long timestamp = System.currentTimeMillis();
     protected ArrayList<Object> data = new ArrayList<>();
     protected ArrayList<Object> make = new ArrayList<>();
+    public int length = -1;
     protected int id = -1;
 
     public Model() {
@@ -127,6 +128,7 @@ public abstract class Model {
                 data.add(ret);
             }
         }
+        length = data.size();
     }
 
     protected void setPost(String request) {

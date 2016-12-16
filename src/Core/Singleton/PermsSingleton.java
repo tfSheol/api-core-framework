@@ -33,8 +33,8 @@ public class PermsSingleton {
                 }
             }
             ServerSingleton.getInstance().log("[SYSTEM] -> Nb perms loaded: " + permsNb);
-        } catch (IOException ex) {
-            ServerSingleton.getInstance().log("IOException : " + ex, true);
+        } catch (IOException e) {
+            ServerSingleton.getInstance().log("IOException : " + e, e);
         }
     }
 

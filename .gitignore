@@ -67,3 +67,5 @@ buildNumber.properties
 
 ### Custom ###
 logs/
+.idea/
+.eclipse/

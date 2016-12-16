@@ -29,25 +29,28 @@ public class Router {
         for (Class<?> obj : ServerSingleton.getInstance().getAnnotated()) {
             String route = getGenericRoute(method, querryRoute, obj);
             error.setPath(route);
-            Oauth2 oauth2 = new Oauth2((headerField.containsKey("Authorization")) ? headerField.getString("Authorization") : null);
+            Oauth2 oauth2 = new Oauth2((headerField.containsKey("authorization")) ? headerField.getString("authorization") : null);
             Oauth2Permissions oauth2Permissions = new Oauth2Permissions();
+            if (!method.equals("OPTIONS") && oauth2.isToken()) {
+                UserSecuritySingleton.getInstance().updateSocketToken(socket, oauth2.getToken());
+            }
             if (route != null && (!route.equals("/oauth") || (oauth2.getType() != null && oauth2.getType().equals(Oauth2.BASIC) && route.equals("/oauth")))) {
                 if (oauth2Permissions.checkPermsRoute(socket, oauth2, method, route, obj, oauth2.getType())) {
                     for (Method methods : obj.getDeclaredMethods()) {
                         if (methods.isAnnotationPresent(Route.class) && methods.isAnnotationPresent(Methode.class)) {
                             if (methods.getAnnotation(Route.class).value().equals(route) && methods.getAnnotation(Methode.class).value().equals(method)) {
                                 try {
+                                    ServerSingleton.getInstance().log(socket, "[SERVER] -> response " + error.getCode() + " " + error.getError() + " | " + ServerSingleton.getInstance().getHttpCode(socket));
                                     ServerSingleton.getInstance().log(socket, "[SERVER] -> execute " + route);
                                     Object[] params = {socket, oauth2, headerField, jsonObject, args};
                                     String json = cleanJson(socket, method, methods.invoke(obj.newInstance(), params)).toString();
                                     ServerSingleton.getInstance().log(socket, "[SERVER] -> " + json);
+                                    ServerSingleton.getInstance().log(socket, "[SERVER] -> response " + error.getCode() + " " + error.getError() + " | " + ServerSingleton.getInstance().getHttpCode(socket));
                                     return json;
                                 } catch (IllegalAccessException | InstantiationException e) {
-                                    ServerSingleton.getInstance().log(socket, "[SERVER] -> error on route finder : " + e, true);
+                                    ServerSingleton.getInstance().log(socket, "[SERVER] -> error route not founded: ", e);
                                 } catch (InvocationTargetException e) {
-                                    error.setErrorMsg(e.getTargetException().getMessage());
-                                    e.printStackTrace();
-                                    ServerSingleton.getInstance().log(socket, "[SERVER] -> router: " + e.getTargetException().getMessage(), true);
+                                    ServerSingleton.getInstance().log(socket, "[SERVER] -> router: ", e);
                                 }
                             }
                         }
@@ -69,7 +72,7 @@ public class Router {
         error.setCode(socket, Code.METHOD_NOT_ALLOWED);
         String json = cleanJson(socket, method, error).toString();
         ServerSingleton.getInstance().log(socket, "[SERVER] -> " + json);
-        IpSingleton.getInstance().setIpFail(socket.split(":")[0].replace("/", ""));
+        IpSingleton.getInstance().setIpFail(socket);
         return json;
     }
 
@@ -90,7 +93,28 @@ public class Router {
                 json = json.put("error_msg", "Data not found");
             }
         }
+        JSONObject json_tmp = new JSONObject(json.toString());
+        removeEmptyValuesJSONObject(json_tmp, json);
         return json;
+    }
+
+    private void removeEmptyValuesJSONObject(JSONObject json_tmp, JSONObject json) {
+        for (Object object : json_tmp.keySet()) {
+            //System.err.println(object + " : " + json.get(object.toString()).getClass().getTypeName());
+            if (json_tmp.get(object.toString()).getClass().getTypeName().equals("org.json.JSONArray")) {
+                removeEmptyValuesJSONArray(json_tmp.getJSONArray(object.toString()), json.getJSONArray(object.toString()));
+            } else if ((json_tmp.get(object.toString()).getClass().getTypeName().equals("java.lang.Integer") && (json_tmp.getInt(object.toString()) == -1 || json_tmp.getInt(object.toString()) == 0))
+                    || (json_tmp.get(object.toString()).getClass().getTypeName().equals("java.lang.String") && json_tmp.getString(object.toString()) == null)
+                    || (json_tmp.get(object.toString()).getClass().getTypeName().equals("java.lang.Long") && (json_tmp.getInt(object.toString()) == -1 || json_tmp.getInt(object.toString()) == 0))) {
+                json.remove(object.toString());
+            }
+        }
+    }
+
+    private void removeEmptyValuesJSONArray(JSONArray json_tmp, JSONArray json) {
+        /*for (int i = 0; i < json_tmp.length(); i++) {
+            removeEmptyValuesJSONObject();
+        }*/
     }
 
     private String getGenericRoute(String method, String route, Class<?> obj) {

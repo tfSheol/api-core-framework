@@ -7,6 +7,8 @@ import Core.Http.LoggerService;
 import Core.Task;
 import org.reflections.Reflections;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
@@ -93,7 +95,7 @@ public class ServerSingleton {
 
     public void removeHttpRequest(String socket) {
         for (int i = 0; i < httpRequest.size(); i++) {
-            if (httpRequest.get(i).get("socket").equals(socket)) {
+            if (!httpRequest.get(i).isEmpty() && httpRequest.get(i).get("socket").equals(socket)) {
                 httpRequest.remove(i);
             }
         }
@@ -103,16 +105,20 @@ public class ServerSingleton {
         logger.setLogMsg(string);
     }
 
-    public void log(String string, boolean error) {
-        logger.setLogMsg(string, error);
+    public void log(String string, Exception e) {
+        StringWriter errors = new StringWriter();
+        e.printStackTrace(new PrintWriter(errors));
+        logger.setLogMsg(string, errors.toString());
     }
 
     public void log(String socket, String string) {
         logger.setLogMsg(socket, string);
     }
 
-    public void log(String socket, String string, boolean error) {
-        logger.setLogMsg(socket, string, error);
+    public void log(String socket, String string, Exception e) {
+        StringWriter errors = new StringWriter();
+        e.printStackTrace(new PrintWriter(errors));
+        logger.setLogMsg(socket, string, errors.toString());
     }
 
     public String getCurrentDay() {

@@ -12,7 +12,7 @@ public class Header extends HashMap {
         try {
             return Integer.parseInt(get(key).toString());
         } catch (NumberFormatException e) {
-            ServerSingleton.getInstance().log("[SERVER] -> Header.getInt : " + e, true);
+            ServerSingleton.getInstance().log("[SERVER] -> Header.getInt : " + e, e);
         }
         return -1;
     }
@@ -25,7 +25,7 @@ public class Header extends HashMap {
         try {
             return Double.valueOf(get(key).toString());
         } catch (NumberFormatException e) {
-            ServerSingleton.getInstance().log("[SERVER] -> Header.getDouble : " + e, true);
+            ServerSingleton.getInstance().log("[SERVER] -> Header.getDouble : " + e, e);
         }
         return -1;
     }
@@ -34,7 +34,7 @@ public class Header extends HashMap {
         try {
             return Float.valueOf(get(key).toString());
         } catch (NumberFormatException e) {
-            ServerSingleton.getInstance().log("[SERVER] -> Header.getFloat : " + e, true);
+            ServerSingleton.getInstance().log("[SERVER] -> Header.getFloat : " + e, e);
         }
         return -1;
     }
