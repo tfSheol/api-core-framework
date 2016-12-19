@@ -41,34 +41,6 @@
         <sourceDirectory>src</sourceDirectory>
         <plugins>
             <plugin>
-                <groupId>com.github.wvengen</groupId>
-                <artifactId>proguard-maven-plugin</artifactId>
-                <version>2.0.6</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>net.sf.proguard</groupId>
-                        <artifactId>proguard-base</artifactId>
-                        <version>5.3.2</version>
-                    </dependency>
-                </dependencies>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals><goal>proguard</goal></goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <proguardVersion>4.10</proguardVersion>
-                    <options>
-                        <option>-keep public class Core.Main{public static void main(java.lang.String[]);}</option>
-                    </options>
-                    <libs>
-                        <lib>${java.home}/lib/rt.jar</lib>
-                        <lib>${java.home}/lib/jce.jar</lib>
-                    </libs>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.5.1</version>
@@ -135,6 +107,18 @@
                                 <copy file="./ip.properties" tofile="${project.build.directory}/ip.properties"/>
                                 <echo>Add Database</echo>
                                 <copy file="./db/data.db" tofile="${project.build.directory}/db/data.db"/>
+                                <copy file="./db/db_SQLite_tmp.db"
+                                      tofile="${project.build.directory}/db/db_SQLite_tmp.db"/>
+                                <echo>Add Plugins</echo>
+                                <copy file="./plugins/cl_api.jar"
+                                      tofile="${project.build.directory}/plugins/cl_api.jar"/>
+                                <echo>Add Proguard Script</echo>
+                                <copy file="./proguard/config.pro"
+                                      tofile="${project.build.directory}/config.pro"/>
+                                <copy file="./proguard/proguard.jar"
+                                      tofile="${project.build.directory}/proguard.jar"/>
+                                <copy file="./proguard/build.sh"
+                                      tofile="${project.build.directory}/build.sh"/>
                                 <echo>Add Launcher script</echo>
                                 <copy file="./scripts/launcher.bat" tofile="${project.build.directory}/launcher.bat"/>
                                 <copy file="./scripts/launcher.sh" tofile="${project.build.directory}/launcher.sh"/>
