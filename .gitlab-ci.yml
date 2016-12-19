@@ -4,6 +4,6 @@ build:
   script:
     - "mvn clean compile package"
     - "cd ./target"
-    - "./build.sh"
+    - "java -jar proguard.jar @config.pro"
   artifacts:
     untracked: true
