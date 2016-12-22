@@ -17,7 +17,8 @@
 
 -keep,includedescriptorclasses public class Core.Http.Map {*;}
 
--keep,includedescriptorclasses public abstract class Core.Http.Job {*;}
+-keep,includedescriptorclasses public abstract class Core.Http.Job {}
+-keep,includedescriptorclasses public abstract class Core.Model {}
 
 -keep,includedescriptorclasses public @interface Core.Controller {*;}
 -keep,includedescriptorclasses public @interface Core.Methode {*;}

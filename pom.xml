@@ -122,6 +122,8 @@
                                 <echo>Add Launcher script</echo>
                                 <copy file="./scripts/launcher.bat" tofile="${project.build.directory}/launcher.bat"/>
                                 <copy file="./scripts/launcher.sh" tofile="${project.build.directory}/launcher.sh"/>
+                                <copy file="./scripts/launcher_proguard.bat" tofile="${project.build.directory}/launcher_proguard.bat"/>
+                                <copy file="./scripts/launcher_proguard.sh" tofile="${project.build.directory}/launcher_proguard.sh"/>
                                 <echo>Add codes examples</echo>
                                 <copy file="./Examples/AngularJS/oauth.html"
                                       tofile="${project.build.directory}/Examples/AngularJS/oauth.html"/>
