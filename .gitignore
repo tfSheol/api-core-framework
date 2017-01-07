@@ -30,7 +30,7 @@
 ## File-based project format:
 *.iws
 
-## Plugin-specific files:
+## PluginSys-specific files:
 
 # IntelliJ
 /out/

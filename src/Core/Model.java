@@ -26,7 +26,7 @@ public abstract class Model {
     protected int id = -1;
 
     public Model() {
-        Reflections reflections = new Reflections("Plugin.*");
+        Reflections reflections = new Reflections("PluginSys.*");
         Set<Class<?>> annotated = reflections.getTypesAnnotatedWith(Controller.class);
         for (Class<?> obj : annotated) {
             for (Method method : obj.getDeclaredMethods()) {

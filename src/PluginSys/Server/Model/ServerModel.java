@@ -1,11 +1,11 @@
-package Plugin.Server.Model;
+package PluginSys.Server.Model;
 
 import Core.Http.Map;
 import Core.Model;
 import Core.Singleton.ConfigSingleton;
 import Core.Singleton.NbClientsSingleton;
 import Core.Singleton.ServerSingleton;
-import Plugin.Server.Obj.ServerObj;
+import PluginSys.Server.Obj.ServerObj;
 
 /**
  * Created by teddy on 04/05/2016.

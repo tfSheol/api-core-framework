@@ -20,12 +20,7 @@ public class ThreadPool extends Thread {
     private volatile boolean keepRunning = true;
 
     public ThreadPool(final int port) {
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                ThreadPool.this.shutdown();
-            }
-        });
+        Runtime.getRuntime().addShutdownHook(new Thread(ThreadPool.this::shutdown));
 
         try {
             listenSocket = new ServerSocket(port);

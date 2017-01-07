@@ -30,7 +30,7 @@ public class ServerSingleton {
     private ServerSingleton() {
         logger.start();
         new LoggerService().start();
-        Reflections reflections = new Reflections("Plugin.*");
+        Reflections reflections = new Reflections("PluginSys.*");
         annotated = reflections.getTypesAnnotatedWith(Controller.class);
         tasks = reflections.getTypesAnnotatedWith(Task.class);
         createFolder("plugins");
@@ -51,11 +51,7 @@ public class ServerSingleton {
 
     private void initPlugins(String folder) {
         File pluginsDir = new File(System.getProperty("user.dir") + "/" + folder);
-        String[] jarFileInFolder = pluginsDir.list(new FilenameFilter() {
-            public boolean accept(File directory, String fileName) {
-                return fileName.endsWith(".jar");
-            }
-        });
+        String[] jarFileInFolder = pluginsDir.list((directory, fileName) -> fileName.endsWith(".jar"));
         if (jarFileInFolder != null) {
             for (String jar : jarFileInFolder) {
                 try {
