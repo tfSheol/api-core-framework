@@ -1,4 +1,4 @@
-package PluginSys.Server.Obj;
+package Plugin.Server.Obj;
 
 /**
  * Created by teddy on 04/05/2016.

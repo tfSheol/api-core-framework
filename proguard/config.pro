@@ -14,12 +14,11 @@
 }
 
 -keep,includedescriptorclasses public class !Core.** {*;}
--keep,includedescriptorclasses public class !PluginSys.** {*;}
 
 -keep,includedescriptorclasses public class Core.Http.Map {*;}
 -keep,includedescriptorclasses public class Core.Http.Code {*;}
 
--keep,includedescriptorclasses public abstract class Core.Http.Job {}
+-keep,includedescriptorclasses public abstract class Core.Http.Job {*;}
 -keep,includedescriptorclasses public abstract class Core.Model {}
 
 -keep,includedescriptorclasses public @interface Core.Controller {*;}
@@ -29,7 +28,7 @@
 -keep,includedescriptorclasses public @interface Core.SQLDriver {*;}
 
 -dontwarn Core.**
--dontwarn PluginSys.**
+-dontwarn Plugin.**
 
 -dontnote Core.**
 

@@ -30,7 +30,7 @@ public class ServerSingleton {
     private ServerSingleton() {
         logger.start();
         new LoggerService().start();
-        Reflections reflections = new Reflections("PluginSys.*");
+        Reflections reflections = new Reflections("Plugin.*");
         annotated = reflections.getTypesAnnotatedWith(Controller.class);
         tasks = reflections.getTypesAnnotatedWith(Task.class);
         createFolder("plugins");

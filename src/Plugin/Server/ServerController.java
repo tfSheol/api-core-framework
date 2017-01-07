@@ -1,4 +1,4 @@
-package PluginSys.Server;
+package Plugin.Server;
 
 import Core.Controller;
 import Core.Http.Header;
@@ -6,7 +6,7 @@ import Core.Http.Map;
 import Core.Http.Oauth2;
 import Core.Methode;
 import Core.Route;
-import PluginSys.Server.Model.ServerModel;
+import Plugin.Server.Model.ServerModel;
 import org.json.JSONObject;
 
 /**

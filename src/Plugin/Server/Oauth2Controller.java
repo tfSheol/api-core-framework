@@ -1,4 +1,4 @@
-package PluginSys.Server;
+package Plugin.Server;
 
 import Core.Controller;
 import Core.Http.Header;
