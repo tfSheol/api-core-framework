@@ -21,6 +21,12 @@
 -keep,includedescriptorclasses public abstract class Core.Http.Job {*;}
 -keep,includedescriptorclasses public abstract class Core.Model {}
 
+-keep,includedescriptorclasses public class Core.Singleton.** {*;}
+-keep,includedescriptorclasses public class Core.Http.Tools {*;}
+-keep,includedescriptorclasses public class Core.Http.Oauth2 {*;}
+-keep,includedescriptorclasses public class Core.Http.Oauth2Model {*;}
+-keep,includedescriptorclasses public class Core.Database.** {*;}
+
 -keep,includedescriptorclasses public @interface Core.Controller {*;}
 -keep,includedescriptorclasses public @interface Core.Methode {*;}
 -keep,includedescriptorclasses public @interface Core.Route {*;}
