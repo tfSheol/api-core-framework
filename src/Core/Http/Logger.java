@@ -39,21 +39,23 @@ public class Logger extends Thread {
                     for (int i = 0; i < log.size(); i++) {
                         String currentTime = "[" + dateFormat.format(System.currentTimeMillis()) + "]";
                         String user = "";
-                        if (!log.get(i).get("socket").equals("[" + LOCAL + "]")) {
-                            String tmp = UserSecuritySingleton.getInstance().getUserName(log.get(i).get("socket").replace("[", "").replace("]", ""));
-                            if (!tmp.isEmpty()) {
-                                user = "[" + tmp + "]";
+                        if (log.get(i) != null) {
+                            if (log.get(i).containsKey("socket") && !log.get(i).get("socket").equals("[" + LOCAL + "]")) {
+                                String tmp = UserSecuritySingleton.getInstance().getUserName(log.get(i).get("socket").replace("[", "").replace("]", ""));
+                                if (!tmp.isEmpty()) {
+                                    user = "[" + tmp + "]";
+                                }
                             }
+                            if (log.get(i).containsKey("error")) {
+                                pw.println(currentTime + log.get(i).get("socket") + user + log.get(i).get("value") + log.get(i).get("error"));
+                                System.err.println(log.get(i).get("socket") + user + log.get(i).get("value") + log.get(i).get("error"));
+                            } else {
+                                pw.println(currentTime + log.get(i).get("socket") + user + log.get(i).get("value"));
+                                System.out.println(log.get(i).get("socket") + user + log.get(i).get("value"));
+                            }
+                            log.remove(i);
+                            i--;
                         }
-                        if (log.get(i).containsKey("error")) {
-                            pw.println(currentTime + log.get(i).get("socket") + user + log.get(i).get("value") + log.get(i).get("error"));
-                            System.err.println(log.get(i).get("socket") + user + log.get(i).get("value") + log.get(i).get("error"));
-                        } else {
-                            pw.println(currentTime + log.get(i).get("socket") + user + log.get(i).get("value"));
-                            System.out.println(log.get(i).get("socket") + user + log.get(i).get("value"));
-                        }
-                        log.remove(i);
-                        i--;
                         Thread.sleep(10);
                     }
                 }
