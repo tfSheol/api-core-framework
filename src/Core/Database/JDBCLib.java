@@ -32,7 +32,7 @@ public class JDBCLib extends SQL {
             c = DriverManager.getConnection("jdbc:mysql://" + url, username, password);
             stmt = c.createStatement();
             c.setAutoCommit(false);
-        } catch (ClassNotFoundException | SQLException e) {
+        } catch (Exception e) {
             ServerSingleton.getInstance().log("MySQL : " + e.getMessage(), e);
         }
         return this;

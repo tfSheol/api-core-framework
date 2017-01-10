@@ -39,6 +39,10 @@ public class SQLRequest {
     public void select() {
         ResultSet result;
         try {
+            while (sql.c == null) {
+                sql = new MyJDBC().load();
+                Thread.sleep(3000);
+            }
             result = sql.selectDB(request);
             ResultSetMetaData metaData = result.getMetaData();
             while (result.next()) {
@@ -64,6 +68,8 @@ public class SQLRequest {
             }
         } catch (SQLException e) {
             ServerSingleton.getInstance().log("SELECT : " + e, e);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
         sql.closeDB();
     }
