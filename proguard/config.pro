@@ -23,6 +23,7 @@
 
 -keep,includedescriptorclasses public class Core.Singleton.** {*;}
 -keep,includedescriptorclasses public class Core.Http.Tools {*;}
+-keep,includedescriptorclasses public class Core.Http.Header {*;}
 -keep,includedescriptorclasses public class Core.Http.Oauth2 {*;}
 -keep,includedescriptorclasses public class Core.Http.Oauth2Model {*;}
 -keep,includedescriptorclasses public class Core.Database.** {*;}
