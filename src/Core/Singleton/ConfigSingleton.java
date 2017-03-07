@@ -49,6 +49,10 @@ public class ConfigSingleton {
         return Integer.parseInt(props.getProperty(key));
     }
 
+    public boolean isSSL() {
+        return Boolean.parseBoolean(props.getProperty("ssl"));
+    }
+
     public int getPort() {
         return Integer.parseInt(props.getProperty("port"));
     }

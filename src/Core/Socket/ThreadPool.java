@@ -3,11 +3,16 @@ package Core.Socket;
 import Core.Http.Oauth2TokenService;
 import Core.Singleton.*;
 
+import javax.net.ServerSocketFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLServerSocketFactory;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -19,16 +24,28 @@ public class ThreadPool extends Thread {
     private ServerSocket listenSocket;
     private volatile boolean keepRunning = true;
 
+    @SuppressWarnings("all")
     public ThreadPool(final int port) {
         Runtime.getRuntime().addShutdownHook(new Thread(ThreadPool.this::shutdown));
-
         try {
-            listenSocket = new ServerSocket(port);
             ConfigSingleton.getInstance();
             NbClientsSingleton.getInstance();
             PermsSingleton.getInstance();
             UserSecuritySingleton.getInstance();
             new Oauth2TokenService().start();
+            if (ConfigSingleton.getInstance().isSSL()) {
+                System.setProperty("javax.net.ssl.keyStore", "ssl/keystore.jks");
+                System.setProperty("javax.net.ssl.keyStorePassword", "test1234");
+                System.setProperty("javax.net.ssl.keyStoreType", "JKS");
+                System.setProperty("javax.net.ssl.trustStore", "ssl/chain.jks");
+                System.setProperty("javax.net.ssl.trustStorePassword", "test1234");
+                System.setProperty("javax.net.ssl.trustStoreType", "JKS");
+                System.setProperty("sun.security.ssl.allowUnsafeRenegotiation", "true");
+                SSLServerSocketFactory socketFactory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
+                listenSocket = (SSLServerSocket) socketFactory.createServerSocket(port);
+            } else {
+                listenSocket = new ServerSocket(port);
+            }
             ServerSingleton.getInstance().setHostIp(String.valueOf(listenSocket.getLocalSocketAddress()));
         } catch (IOException e) {
             ServerSingleton.getInstance().log("[SERVER] -> An exception occurred while creating the listen socket: ", e);
@@ -71,7 +88,7 @@ public class ThreadPool extends Thread {
         ServerSingleton.getInstance().log("[SERVER] -> Stopped accepting incoming connections.");
     }
 
-    public void shutdown() {
+    private void shutdown() {
         ServerSingleton.getInstance().log("[SERVER] -> Shutting down the server.");
         ServerSingleton.getInstance().closeLogger();
         NbClientsSingleton.getInstance().razClient();

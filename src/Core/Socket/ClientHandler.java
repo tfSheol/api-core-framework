@@ -32,6 +32,7 @@ public class ClientHandler implements Runnable {
     }
 
     @Override
+    @SuppressWarnings("all")
     public void run() {
         String clientId = clientSock.getRemoteSocketAddress().toString();
         boolean keepConnect = true;
@@ -41,7 +42,8 @@ public class ClientHandler implements Runnable {
                 String tmp;
                 userInput = new BufferedReader(new InputStreamReader(clientSock.getInputStream(), ConfigSingleton.getInstance().getCharset()));
                 userOutput = new DataOutputStream(clientSock.getOutputStream());
-                while (keepConnect && (tmp = userInput.readLine()) != null && tmp.length() > 0 && !IpSingleton.getInstance().isBanned(IpSingleton.getInstance().convertToIp(clientId))) {
+                while (keepConnect && (tmp = userInput.readLine()) != null
+                        && !tmp.equals("") && tmp.length() > 0 && !IpSingleton.getInstance().isBanned(IpSingleton.getInstance().convertToIp(clientId))) {
                     keepConnect = ConfigSingleton.getInstance().getBoolean("keep-alive");
                     if (keepConnect) {
                         clearData();
@@ -110,7 +112,7 @@ public class ClientHandler implements Runnable {
         } catch (SocketException e) {
             ServerSingleton.getInstance().log("[SERVER] -> Connection lost to " + clientId);
         } catch (Exception e) {
-            ServerSingleton.getInstance().log("IOException: ", e);
+            ServerSingleton.getInstance().log("IOException", e);
         }
     }
 
