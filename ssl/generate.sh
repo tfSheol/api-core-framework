@@ -1,5 +1,5 @@
 #!/bin/sh
-rm -f *.pem *.p12 *.jks
+rm -f *.p12 *.jks
 
 # Old
 # openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365
