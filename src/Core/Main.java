@@ -24,6 +24,13 @@ public class Main {
             System.exit(1);
         }
         final ThreadPool server = new ThreadPool(port);
+        server.setDaemon(true);
+        Runtime.getRuntime().addShutdownHook(new Thread(server::shutdown));
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+            public void run() {
+                System.err.println("In shutdown hook");
+            }
+        }, "Shutdown-thread"));
         server.start();
         try {
             server.join();

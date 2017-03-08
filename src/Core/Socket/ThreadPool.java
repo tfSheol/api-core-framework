@@ -89,7 +89,7 @@ public class ThreadPool extends Thread {
         ServerSingleton.getInstance().log("[SERVER] -> Stopped accepting incoming connections.");
     }
 
-    private void shutdown() {
+    public void shutdown() {
         ServerSingleton.getInstance().log("[SERVER] -> Shutting down the server.");
         ServerSingleton.getInstance().closeLogger();
         NbClientsSingleton.getInstance().razClient();

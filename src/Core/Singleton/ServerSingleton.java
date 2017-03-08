@@ -13,6 +13,7 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -20,7 +21,7 @@ import java.util.jar.JarFile;
  * Created by teddy on 05/05/2016.
  */
 public class ServerSingleton {
-    private ArrayList<HashMap<String, Object>> httpRequest = new ArrayList<>();
+    private CopyOnWriteArrayList<HashMap<String, Object>> httpRequest = new CopyOnWriteArrayList<>();
     private String hostIp;
     private Logger logger = new Logger();
     private Set<Class<?>> annotated;

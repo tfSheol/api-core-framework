@@ -4,38 +4,74 @@ import Core.Singleton.UserSecuritySingleton;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by teddy on 28/05/2016.
  */
 public class Logger extends Thread {
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("d/M/yyyy-HH:mm:ss");
-    private SimpleDateFormat dateFileFormat = new SimpleDateFormat("d-M-yyyy_HH-mm-ss");
-    private SimpleDateFormat currentDayFormat = new SimpleDateFormat("d-M-yyyy");
-    private File file = new File("./logs/log_" + dateFileFormat.format(System.currentTimeMillis()) + ".txt");
-    private ArrayList<HashMap<String, String>> log = new ArrayList<>();
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/M/d-HH:mm:ss");
+    private SimpleDateFormat dateFileFormat = new SimpleDateFormat("yyyy-M-d_HH-mm-ss");
+    private SimpleDateFormat currentDayFormat = new SimpleDateFormat("yyyy-M-d");
+    private CopyOnWriteArrayList<HashMap<String, String>> log = new CopyOnWriteArrayList<>();
     private String currentDay = currentDayFormat.format(System.currentTimeMillis());
-    private static String LOCAL = "LOCAL";
-    private static String ERROR = "ERROR";
-    PrintWriter pw;
+    private final static String LOCAL = "LOCAL";
+    private final static String ERROR = "ERROR";
+    private final static int MAX_REQUEST = Integer.MAX_VALUE / 4;
+    private String startValue;
+    private long nbLogFiles = 0;
+    private int nbRequest = 0;
+    private PrintWriter pw;
+    private File file;
 
+    @SuppressWarnings("all")
     public Logger() {
+        if (!new File("logs").exists()) {
+            new File("logs").mkdirs();
+        }
+        initNewFolderLog();
+    }
+
+    @SuppressWarnings("all")
+    private void initNewFolderLog() {
+        startValue = dateFileFormat.format(System.currentTimeMillis());
+        if (!new File("logs/" + startValue).exists()) {
+            new File("logs/" + startValue).mkdirs();
+            nbLogFiles = 0;
+            initNewLoggerFile();
+        }
+    }
+
+    private void initNewLoggerFile() {
         try {
-            if (!new File("./logs").exists()) {
-                new File("logs").mkdirs();
+            if (pw != null) {
+                pw.close();
             }
-            pw = new PrintWriter(new BufferedWriter(new FileWriter(file)), true);
+            if (nbLogFiles >= Long.MAX_VALUE - 1000) {
+                initNewFolderLog();
+            }
+            file = new File("logs/" + startValue + "/log_" + startValue + "_" + nbLogFiles++ + ".txt");
+            pw = new PrintWriter(new BufferedWriter(new FileWriter(file.getAbsoluteFile())), true);
+            String currentTime = "[" + dateFormat.format(System.currentTimeMillis()) + "]";
+            pw.println(currentTime + "[LOCAL][LOGGER] -> New log file in: " + file.getAbsolutePath());
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void checkNbRequest(String currentTime) {
+        if (nbRequest++ >= MAX_REQUEST) {
+            nbRequest = 0;
+            pw.println(currentTime + "[LOCAL][LOGGER] -> End log file & init the next file...");
+            initNewLoggerFile();
         }
     }
 
     public void run() {
         while (true) {
             try {
-                if (!log.isEmpty()) {
+                if (pw != null && !log.isEmpty()) {
                     for (int i = 0; i < log.size(); i++) {
                         String currentTime = "[" + dateFormat.format(System.currentTimeMillis()) + "]";
                         String user = "";
@@ -54,12 +90,14 @@ public class Logger extends Thread {
                                 System.out.println(log.get(i).get("socket") + user + log.get(i).get("value"));
                             }
                             log.remove(i);
+                            checkNbRequest(currentTime);
+                            pw.flush();
                             i--;
                         }
-                        Thread.sleep(10);
+                        //Thread.sleep(10);
                     }
                 }
-                Thread.sleep(50);
+                Thread.sleep(10);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -98,14 +136,14 @@ public class Logger extends Thread {
     }
 
     public void setNewLog() {
-        try {
-            pw = new PrintWriter(new BufferedWriter(new FileWriter(file)), true);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        initNewFolderLog();
     }
 
     public void closeFile() {
-        pw.close();
+        if (pw != null) {
+            String currentTime = "[" + dateFormat.format(System.currentTimeMillis()) + "]";
+            pw.println(currentTime + "[LOCAL][LOGGER] -> Shutdown logger system...");
+            pw.close();
+        }
     }
 }
