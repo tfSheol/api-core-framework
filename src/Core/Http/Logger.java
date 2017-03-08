@@ -94,7 +94,6 @@ public class Logger extends Thread {
                             pw.flush();
                             i--;
                         }
-                        Thread.sleep(1);
                     }
                 }
                 Thread.sleep(10);
