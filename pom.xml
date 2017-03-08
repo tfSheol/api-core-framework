@@ -112,6 +112,11 @@
                                 <echo>Add Plugins</echo>
                                 <copy file="./plugins/cl_api.jar"
                                       tofile="${project.build.directory}/plugins/cl_api.jar"/>
+                                <echo>Add SSL</echo>
+                                <copy file="./ssl/keystore.jks"
+                                      tofile="${project.build.directory}/ssl/keystore.jks"/>
+                                <copy file="./ssl/chain.jks"
+                                      tofile="${project.build.directory}/ssl/chain.jks"/>
                                 <echo>Add Proguard Script</echo>
                                 <copy file="./proguard/config.pro"
                                       tofile="${project.build.directory}/config.pro"/>

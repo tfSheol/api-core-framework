@@ -32,7 +32,8 @@ public class IpSingleton {
     }
 
     public String convertToIp(String socket) {
-        return new StringBuilder(new StringBuilder(socket).reverse().toString().replace("/", "").replaceFirst(":", " ")).reverse().toString().split(" ")[0];
+        return new StringBuilder(new StringBuilder(socket).reverse().toString()
+                .replace("/", "").replaceFirst(":", " ")).reverse().toString().split(" ")[0];
     }
 
     public void setIpFail(String socket) {
@@ -41,8 +42,8 @@ public class IpSingleton {
             boolean founded = false;
             for (int i = 0; i < ipList.size(); i++) {
                 if (ipList.get(i).get("ip").equals(ip)) {
-                    ServerSingleton.getInstance().log("[SERVER BAN IP] -> " + socket + " as a suspicious behavior (attempt: " + ipList.get(i).get("attempt") + "/" + Integer.parseInt(ConfigSingleton.getInstance().getMaxAttempt()) + ")");
-                    if (((Integer) ipList.get(i).get("attempt")) >= Integer.parseInt(ConfigSingleton.getInstance().getMaxAttempt())) {
+                    ServerSingleton.getInstance().log("[SERVER BAN IP] -> " + socket + " as a suspicious behavior (attempt: " + ipList.get(i).get("attempt") + "/" + ConfigSingleton.getInstance().getMaxAttempt() + ")");
+                    if (((Integer) ipList.get(i).get("attempt")) >= ConfigSingleton.getInstance().getMaxAttempt()) {
                         banIp(ip);
                         ipList.remove(i);
                         i--;

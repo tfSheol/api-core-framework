@@ -7,6 +7,7 @@ import Core.Router;
 import Core.Singleton.*;
 import org.json.JSONObject;
 
+import javax.net.ssl.SSLException;
 import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
@@ -111,6 +112,10 @@ public class ClientHandler implements Runnable {
             }
         } catch (SocketException e) {
             ServerSingleton.getInstance().log("[SERVER] -> Connection lost to " + clientId);
+        } catch (SSLException e) {
+            ServerSingleton.getInstance().log("[SERVER] -> HTTP over HTTPS not allowed...");
+            IpSingleton.getInstance().setIpFail(clientId);
+            close(clientId);
         } catch (Exception e) {
             ServerSingleton.getInstance().log("IOException", e);
         }

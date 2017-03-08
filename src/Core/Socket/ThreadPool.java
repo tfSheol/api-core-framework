@@ -20,6 +20,7 @@ import java.util.concurrent.Executors;
  * Created by teddy on 04/05/2016.
  */
 public class ThreadPool extends Thread {
+    private final static String KeySSLType = "JKS";
     private final ExecutorService workers = Executors.newCachedThreadPool();
     private ServerSocket listenSocket;
     private volatile boolean keepRunning = true;
@@ -34,12 +35,12 @@ public class ThreadPool extends Thread {
             UserSecuritySingleton.getInstance();
             new Oauth2TokenService().start();
             if (ConfigSingleton.getInstance().isSSL()) {
-                System.setProperty("javax.net.ssl.keyStore", "ssl/keystore.jks");
-                System.setProperty("javax.net.ssl.keyStorePassword", "test1234");
-                System.setProperty("javax.net.ssl.keyStoreType", "JKS");
-                System.setProperty("javax.net.ssl.trustStore", "ssl/chain.jks");
-                System.setProperty("javax.net.ssl.trustStorePassword", "test1234");
-                System.setProperty("javax.net.ssl.trustStoreType", "JKS");
+                System.setProperty("javax.net.ssl.keyStore", ConfigSingleton.getInstance().getKeyStore());
+                System.setProperty("javax.net.ssl.keyStorePassword", ConfigSingleton.getInstance().getKeyStorePassword());
+                System.setProperty("javax.net.ssl.keyStoreType", KeySSLType);
+                System.setProperty("javax.net.ssl.trustStore", ConfigSingleton.getInstance().getTrustStore());
+                System.setProperty("javax.net.ssl.trustStorePassword", ConfigSingleton.getInstance().getTrustStorePassword());
+                System.setProperty("javax.net.ssl.trustStoreType", KeySSLType);
                 System.setProperty("sun.security.ssl.allowUnsafeRenegotiation", "true");
                 SSLServerSocketFactory socketFactory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
                 listenSocket = (SSLServerSocket) socketFactory.createServerSocket(port);
