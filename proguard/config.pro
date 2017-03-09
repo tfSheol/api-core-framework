@@ -15,18 +15,22 @@
 
 -keep,includedescriptorclasses public class !Core.** {*;}
 
+-keep,includedescriptorclasses public class Core.Router {
+    public static boolean isJSONValid(java.lang.String);
+    public static java.lang.Object getJson(java.lang.Object);
+}
+
 -keep,includedescriptorclasses public class Core.Http.Map {*;}
 -keep,includedescriptorclasses public class Core.Http.Code {*;}
-
--keep,includedescriptorclasses public abstract class Core.Http.Job {*;}
--keep,includedescriptorclasses public abstract class Core.Model {}
-
 -keep,includedescriptorclasses public class Core.Singleton.** {*;}
 -keep,includedescriptorclasses public class Core.Http.Tools {*;}
 -keep,includedescriptorclasses public class Core.Http.Header {*;}
 -keep,includedescriptorclasses public class Core.Http.Oauth2 {*;}
 -keep,includedescriptorclasses public class Core.Http.Oauth2Model {*;}
 -keep,includedescriptorclasses public class Core.Database.** {*;}
+
+-keep,includedescriptorclasses public abstract class Core.Http.Job {*;}
+-keep,includedescriptorclasses public abstract class Core.Model {}
 
 -keep,includedescriptorclasses public @interface Core.Controller {*;}
 -keep,includedescriptorclasses public @interface Core.Methode {*;}
