@@ -61,7 +61,7 @@ public class ConfigSingleton {
     }
 
     public String getKeyStorePassword() {
-        return props.containsKey("key_store_password") ? props.getProperty("key_store_password") : "test1234";
+        return props.containsKey("key_store_password") ? props.getProperty("key_store_password") : "";
     }
 
     public String getTrustStore() {
@@ -69,7 +69,7 @@ public class ConfigSingleton {
     }
 
     public String getTrustStorePassword() {
-        return props.containsKey("trust_store_password") ? props.getProperty("trust_store_password") : "test1234";
+        return props.containsKey("trust_store_password") ? props.getProperty("trust_store_password") : "";
     }
 
     public int getPort() {

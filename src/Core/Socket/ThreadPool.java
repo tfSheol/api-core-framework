@@ -36,10 +36,14 @@ public class ThreadPool extends Thread {
             new Oauth2TokenService().start();
             if (ConfigSingleton.getInstance().isSSL()) {
                 System.setProperty("javax.net.ssl.keyStore", ConfigSingleton.getInstance().getKeyStore());
-                System.setProperty("javax.net.ssl.keyStorePassword", ConfigSingleton.getInstance().getKeyStorePassword());
+                if (!ConfigSingleton.getInstance().getKeyStorePassword().equals("")) {
+                    System.setProperty("javax.net.ssl.keyStorePassword", ConfigSingleton.getInstance().getKeyStorePassword());
+                }
                 System.setProperty("javax.net.ssl.keyStoreType", KeySSLType);
                 System.setProperty("javax.net.ssl.trustStore", ConfigSingleton.getInstance().getTrustStore());
-                System.setProperty("javax.net.ssl.trustStorePassword", ConfigSingleton.getInstance().getTrustStorePassword());
+                if (!ConfigSingleton.getInstance().getTrustStorePassword().equals("")) {
+                    System.setProperty("javax.net.ssl.trustStorePassword", ConfigSingleton.getInstance().getTrustStorePassword());
+                }
                 System.setProperty("javax.net.ssl.trustStoreType", KeySSLType);
                 System.setProperty("sun.security.ssl.allowUnsafeRenegotiation", "true");
                 SSLServerSocketFactory socketFactory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
